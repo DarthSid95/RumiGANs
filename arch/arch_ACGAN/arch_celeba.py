@@ -55,12 +55,6 @@ class ARCH_celeba():
 			gen_ip=layers.Reshape((int(self.output_size/16),int(self.output_size/16),1024))(gen_dense)
 
 
-
-		# dec1 = tf.keras.layers.Dense(int(self.output_size/16)*int(self.output_size/16)*1024, kernel_initializer=init_fn, use_bias=False)(inputs)		
-		# dec1 = tf.keras.layers.LeakyReLU()(dec1)
-
-		# un_flat = tf.keras.layers.Reshape([int(self.output_size/16),int(self.output_size/16),1024])(dec1) #4x4x1024
-
 		deconv1 = tf.keras.layers.Conv2DTranspose(512, (5, 5), strides=(2, 2), padding='same', use_bias=False, kernel_initializer=init_fn)(gen_ip) #8x8x512
 		deconv1 = tf.keras.layers.BatchNormalization()(deconv1)
 		deconv1 = tf.keras.layers.LeakyReLU()(deconv1)
@@ -80,7 +74,6 @@ class ARCH_celeba():
 
 	def discriminator_model_celeba(self):
 		# init_fn = tf.random_normal_initializer(mean=0.0, stddev=0.05, seed=None)
-		# init_fn = tf.function(init_fn, autograph=False)
 		init_fn = tf.keras.initializers.glorot_uniform()
 		init_fn = tf.function(init_fn, autograph=False)
 
@@ -89,32 +82,23 @@ class ARCH_celeba():
 		conv1 = layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same', kernel_initializer=init_fn, input_shape=[int(self.output_size), int(self.output_size), 3])(inputs)
 		conv1 = layers.BatchNormalization()(conv1)
 		conv1 = layers.LeakyReLU()(conv1)
-		# model.add(layers.Dropout(0.3))
 
 		conv2 = layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same', kernel_initializer=init_fn)(conv1)
 		conv2 = layers.BatchNormalization()(conv2)
 		conv2 = layers.LeakyReLU()(conv2)
 
-		# model.add(layers.Conv2D(32, (5, 5), strides=(1, 1), padding='same', kernel_initializer=init_fn, input_shape=[int(self.output_size), int(self.output_size), 1]))
-		# model.add(layers.LeakyReLU())
-
 		conv3 = layers.Conv2D(256, (5, 5), strides=(2, 2), padding='same', kernel_initializer=init_fn)(conv2)
 		conv3 = layers.BatchNormalization()(conv3)
 		conv3 = layers.LeakyReLU()(conv3)
-
-		# model.add(layers.Dropout(0.3))
 
 		flat = layers.Flatten()(conv3)
 		dense = layers.Dense(50)(flat)
 
 		real_vs_fake = layers.Dense(1)(dense)
-		# real_vs_fake = layers.Activation( activation = 'sigmoid')(real_vs_fake)
 		
 		class_pred = layers.Dense(1)(dense)
-		# class_pred = layers.Activation( activation = 'sigmoid')(class_pred) 
 
 		Cmi_pred = layers.Dense(1)(dense)
-		# Cmi_pred = layers.Activation( activation = 'sigmoid')(Cmi_pred) 
 
 		if self.loss == 'twin':
 			model = tf.keras.Model(inputs = inputs, outputs= [real_vs_fake,class_pred,Cmi_pred])
@@ -123,7 +107,6 @@ class ARCH_celeba():
 
 		return model
 
-	### NEED TO FIX WITH SELF VARS
 	def show_result_celeba(self, images = None, num_epoch = 0, show = False, save = False, path = 'result.png'):
 
 		import logging
@@ -148,31 +131,6 @@ class ARCH_celeba():
 			plt.show()
 		else:
 			plt.close()			
-
-		# size_figure_grid = 10
-		# fig, ax = plt.subplots(size_figure_grid, size_figure_grid, figsize=(10,10))
-		# for i in range(size_figure_grid):
-		# 	for j in range(size_figure_grid):
-		# 		ax[i, j].get_xaxis().set_visible(False)
-		# 		ax[i, j].get_yaxis().set_visible(False)
-				
-		# images = images.numpy()
-		# for k in range(size_figure_grid*size_figure_grid):
-		# 	i = k // size_figure_grid
-		# 	j = k % size_figure_grid
-		# 	ax[i, j].cla()
-		# 	ax[i, j].imshow(images[k], cmap='gray')
-
-		# label = 'Epoch {0}'.format(num_epoch)
-		# fig.text(0.5, 0.04, label, ha='center')
-
-		# if save:
-		# 	plt.savefig(path)
-
-		# if show:
-		# 	plt.show()
-		# else:
-		# 	plt.close()
 		logger.setLevel(old_level)
 
 
@@ -194,7 +152,6 @@ class ARCH_celeba():
 				image = tf.divide(image,255.0)
 				image = tf.scalar_mul(2.0,image)
 				image = tf.subtract(image,1.0)
-				# image = tf.image.convert_image_dtype(image, tf.float16)
 			return image
 
 		if self.FID_load_flag == 0:
@@ -212,26 +169,20 @@ class ARCH_celeba():
 			self.fid_image_dataset = self.fid_image_dataset.map(data_reader_faces,num_parallel_calls=int(self.num_parallel_calls))
 			self.fid_image_dataset = self.fid_image_dataset.batch(self.fid_batch_size)
 
-			# for element in self.fid_image_dataset:
-			# 	self.fid_images = element
-			# 	break
 
 			self.CelebA_Classifier()
 
 
 		if self.mode == 'fid':
 			print(self.checkpoint_dir)
-			# print('logs/130919_ELeGANt_mnist_lsgan_base_01/130919_ELeGANt_mnist_lsgan_base_Results_checkpoints')
 			self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
 			print('Models Loaded Successfully')
 
 		with tf.device(self.device):
 			for image_batch in self.fid_image_dataset:
-				# print(self.fid_train_images.shape)
 				input_class = np.zeros([self.fid_batch_size,1]).astype('int32')
 				noise = tf.random.normal([self.fid_batch_size, self.noise_dims],self.noise_mean, self.noise_stddev)
 				preds = self.generator([noise,input_class], training=False)
-				# preds = preds[:,:,:].numpy()		
 				preds = tf.image.resize(preds, [80,80])
 				preds = tf.scalar_mul(2.,preds)
 				preds = tf.subtract(preds,1.0)
@@ -247,59 +198,3 @@ class ARCH_celeba():
 					self.act2 = act2
 			self.eval_FID()
 			return
-	# def CelebA_Classifier(self):
-	# 	self.FID_model = tf.keras.applications.inception_v3.InceptionV3(include_top=False, pooling='avg', weights='imagenet', input_tensor=None, input_shape=(80,80,3), classes=1000)
-
-	# def FID_celeba(self):
-	# 	if self.FID_load_flag == 0:
-	# 		### First time FID call setup
-	# 		self.FID_load_flag = 1
-	# 		self.FID_female_vec = []
-	# 		self.FID_male_vec = []
-	# 		# self.fid_train_images = self.train_data
-	# 		random_points = tf.keras.backend.random_uniform([1000], minval=0, maxval=int(self.fid_train_images.shape[0]), dtype='int32', seed=None)
-	# 		print(random_points)
-	# 		self.fid_train_images = self.fid_train_images[random_points]
-	# 		self.fid_train_images = tf.image.resize(self.fid_train_images, [80,80])
-	# 		self.fid_train_images = self.fid_train_images.numpy()
-
-	# 		self.CelebA_Classifier()
-
-
-	# 	if self.mode == 'fid':
-	# 		print(self.checkpoint_dir)
-	# 		# print('logs/130919_ELeGANt_mnist_lsgan_base_01/130919_ELeGANt_mnist_lsgan_base_Results_checkpoints')
-	# 		self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
-	# 		print('Models Loaded Successfully')
-
-
-	# 	###FEMALE
-	# 	input_class = (np.ones([self.fid_train_images.shape[0],1])*0).astype('int32')
-	# 	preds = self.generator([tf.random.normal([self.fid_train_images.shape[0], self.noise_dims]), input_class], training=False)
-	# 	# preds = preds[:,:,:].numpy()		
-	# 	preds = tf.image.resize(preds, [80,80])
-	# 	preds = preds.numpy()
-
-	# 	# calculate latent representations
-	# 	self.act1 = self.FID_model.predict(self.fid_train_images)
-	# 	self.act2 = self.FID_model.predict(preds)
-	# 	self.eval_FID()
-	# 	self.FID_female_vec.append(self.fid)
-	# 	path = self.impath
-	# 	np.save(path+'_female_FID.npy',np.array(self.FID_female_vec))
-
-	# 	#EVENN
-	# 	input_class = (np.ones([self.fid_train_images.shape[0],1])*1).astype('int32')
-	# 	preds = self.generator([tf.random.normal([self.fid_train_images.shape[0], self.noise_dims]), input_class], training=False)
-	# 	# preds = preds[:,:,:].numpy()		
-	# 	preds = tf.image.resize(preds, [80,80])
-	# 	preds = preds.numpy()
-
-	# 	# calculate latent representations
-	# 	self.act1 = self.FID_model.predict(self.fid_train_images)
-	# 	self.act2 = self.FID_model.predict(preds)
-	# 	self.eval_FID()
-	# 	self.FID_male_vec.append(self.fid)
-	# 	path = self.impath
-	# 	np.save(path+'_male_FID.npy',np.array(self.FID_male_vec))
-
