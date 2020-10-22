@@ -36,55 +36,34 @@ from numpy import iscomplexobj
 # FLAGS(sys.argv)
 # # tf.keras.backend.set_floatx('float64')
 
-# if FLAGS.loss == 'deq':
-# 	from arch/arch_deq import *
-# elif FLAGS.topic == 'CycleGAN':
-# 	from arch_CycleGAN import *
-# elif FLAGS.topic == 'RumiGAN':
-# 	from arch_RumiGAN import *
-# else:
+
 from arch import *
 from ops import *
 
 '''
-GAN_ARCH Consists of the common parts of GAN architectures, speficially, the calls to the sub architecture classes from the respective files, and the calls for FID evaluations. Each ARCH_data_* class has archtectures corresponding to that dataset learning and for the loss case ( Autoencoder structures for DEQ case, etc.)
+GAN_SRC Consists of the common parts of GAN architectures, speficially, the calls to the sub architecture classes from the respective files, and the calls for FID evaluations. Each ARCH_data_* class has archtectures corresponding to that dataset learning and for the loss case ( Autoencoder structures for DEQ case, etc.)
 '''
 '''***********************************************************************************
-********** GAN Arch ******************************************************************
+********** GAN Source Class -- All the basics and metrics ****************************
 ***********************************************************************************'''
-class GAN_ARCH(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2, ARCH_gmm8, ARCH_comma):  eval('ARCH_'+FLAGS.data),
+class GAN_SRC(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2, ARCH_gmm8, ARCH_comma):  eval('ARCH_'+FLAGS.data),
 
 	def __init__(self,FLAGS_dict):
 		''' Defines anything common to te diofferent GAN approaches. Architectures of Gen and Disc, all flags,'''
 		for name,val in FLAGS_dict.items():
 			exec('self.'+name+' = val')
-		# self.topic = topic
-		# self.data = data
-		# self.loss = loss
-		# self.gan_name = gan
-		# self.mode = mode
-		# self.colab = colab
+
 
 		if self.colab and (self.data in ['mnist', 'celeba', 'cifar10']):
 			self.bar_flag = 0
 		else:
 			self.bar_flag = 1
 
-		# self.metrics = metrics
-	
-		# self.num_parallel_calls = num_parallel_calls
-		# self.saver = saver
-		# self.resume = resume
-		# self.res_flag = res_file
-		# self.save_all = save_all_models
-		# self.paper = paper
 
 		if self.device == '-1':
 			self.device = '/CPU'
-		elif self.device == '-2':
-			self.device = '/TPU'
 		elif self.device == '':
-			self.device = '/GPU'
+			self.device = '/CPU'
 		else:
 			self.device = '/GPU:'+self.device
 			
@@ -101,12 +80,6 @@ class GAN_ARCH(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2,
 			self.beta1 = tf.constant(self.beta1)
 			self.total_count = tf.Variable(0,dtype='int64')
 
-		''' Sort out local special conditions. Higher learning rates for 1DG and DEQ. If printing for paper PDF, set up saving KLD for gaussians. '''
-		if self.data in ['g1', 'g2', 'gmm2']:
-			self.batch_size = tf.constant(500, dtype='int64')
-		if self.data in ['gmm8' ]:
-			self.batch_size = tf.constant(500, dtype='int64')
-		
 
 		eval('ARCH_'+FLAGS.data+'.__init__(self)')
 
@@ -119,34 +92,17 @@ class GAN_ARCH(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2,
 			self.num_test_images = 20
 		else:
 			self.num_test_images = 10
-		# if self.topic in['ACGAN', 'cGAN']:
-		# 	### Need to FIX
-		# 	self.num_to_print = 10
-			# if self.data != 'celeba':
-			# 	self.num_to_print = self.num_classes**2
-			# else:
-			# 	self.num_to_print = self.num_classes*50
 
 
+		self.postfix = {0: f'{0:3.0f}', 1: f'{0:2.3e}', 2: f'{0:2.3e}'}
+		self.bar_format = '{n_fmt}/{total_fmt} |{bar}| {rate_fmt}  Batch: {postfix[0]} ETA: {remaining} Elapsed Time: {elapsed}  D_Loss: {postfix[1]}  G_Loss: {postfix[2]}'
 
-		if self.topic == 'AAE':	
-			self.postfix = {0: f'{0:3.0f}', 1: f'{0:2.3e}', 2: f'{0:2.3e}', 3: f'{0:2.3e}'}
-			self.bar_format = '{n_fmt}/{total_fmt} |{bar}| {rate_fmt}  Batch: {postfix[0]} ETA: {remaining} Time: {elapsed}  D_Loss: {postfix[1]} G_Loss: {postfix[2]} AE_Loss: {postfix[3]}'
-		else:
-			self.postfix = {0: f'{0:3.0f}', 1: f'{0:2.3e}', 2: f'{0:2.3e}'}
-			self.bar_format = '{n_fmt}/{total_fmt} |{bar}| {rate_fmt}  Batch: {postfix[0]} ETA: {remaining} Elapsed Time: {elapsed}  D_Loss: {postfix[1]}  G_Loss: {postfix[2]}'
 
-		# self.log_dir = 'logs/NIPS_May2020/RumiGAN_Cifar10_Compare/'
-		# self.log_dir = 'logs/NIPS_May2020/RumiGAN_Fashion_Compare/RandomClasses/NewJUne/'#'logs/NIPS_May2020/RumiGAN_MNIST_Compares/Singles5MAny/' #'logs/NIPS_May2020/RumiGAN_CelebA_Compare/Males/'#'logs/NIPS_Mar2020/RumiGAN_Compares/Compare_Sharps/'
-
-		### NEEDS FIXING...NEEDS A FLAG
-		# log_dir = 'logs/Log_Folder_03072020/'
-		# log_dir = None
 		if self.log_folder == 'default':
 			today = date.today()
 			self.log_dir = 'logs/Log_Folder_'+today.strftime("%d%m%Y")+'/'
 		else:
-			self.log_dir = self.log_folder#'logs/NIPS_June2020/'
+			self.log_dir = self.log_folder
 		
 		if self.log_dir[-1] != '/':
 			self.log_dir += '/'	
@@ -161,9 +117,6 @@ class GAN_ARCH(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2,
 		if self.res_flag == 1:
 			self.res_file = open(self.run_loc+'/'+self.run_id+'_Results.txt','a')
 			FLAGS.append_flags_into_file(self.run_loc+'/'+self.run_id+'_Flags.txt')
-			# js = json.dumps(flags.FLAGS.flag_values_dict())
-			# f.write(js)
-			# f.close()
 
 
 	def create_run_location(self):
@@ -581,108 +534,6 @@ class GAN_ARCH(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2,
 		#FID Funcs vary per dataset. We therefore call the corresponding child func foundin the arch_*.py files
 		eval(self.FID_func)
 
-
-	def eval_FID_new(self):
-
-		def symmetric_matrix_square_root(mat, eps=1e-10):
-			"""Compute square root of a symmetric matrix.
-			Note that this is different from an elementwise square root. We want to
-			compute M' where M' = sqrt(mat) such that M' * M' = mat.
-			Also note that this method **only** works for symmetric matrices.
-			Args:
-			mat: Matrix to take the square root of.
-			eps: Small epsilon such that any element less than eps will not be square
-			rooted to guard against numerical instability.
-			Returns:
-			Matrix square root of mat.
-			"""
-			# Unlike numpy, tensorflow's return order is (s, u, v)
-
-			s, u, v = tf.linalg.svd(mat)
-			# sqrt is unstable around 0, just use 0 in such case
-			si = tf.compat.v1.where(tf.less(s, eps), s, tf.sqrt(s))
-			# Note that the v returned by Tensorflow is v = V
-			# (when referencing the equation A = U S V^T)
-			# This is unlike Numpy which returns v = V^T
-			# print(u.shape,si.shape,v.shape)
-			return tf.matmul(tf.matmul(u, tf.linalg.tensor_diag(si)), v, transpose_b=True)
-
-
-		def trace_sqrt_product(sigma, sigma_v):
-			"""Find the trace of the positive sqrt of product of covariance matrices.
-			'_symmetric_matrix_square_root' only works for symmetric matrices, so we
-			cannot just take _symmetric_matrix_square_root(sigma * sigma_v).
-			('sigma' and 'sigma_v' are symmetric, but their product is not necessarily).
-			Let sigma = A A so A = sqrt(sigma), and sigma_v = B B.
-			We want to find trace(sqrt(sigma sigma_v)) = trace(sqrt(A A B B))
-			Note the following properties:
-			(i) forall M1, M2: eigenvalues(M1 M2) = eigenvalues(M2 M1)
-			 => eigenvalues(A A B B) = eigenvalues (A B B A)
-			(ii) if M1 = sqrt(M2), then eigenvalues(M1) = sqrt(eigenvalues(M2))
-			 => eigenvalues(sqrt(sigma sigma_v)) = sqrt(eigenvalues(A B B A))
-			(iii) forall M: trace(M) = sum(eigenvalues(M))
-			 => trace(sqrt(sigma sigma_v)) = sum(eigenvalues(sqrt(sigma sigma_v)))
-										   = sum(sqrt(eigenvalues(A B B A)))
-										   = sum(eigenvalues(sqrt(A B B A)))
-										   = trace(sqrt(A B B A))
-										   = trace(sqrt(A sigma_v A))
-			A = sqrt(sigma). Both sigma and A sigma_v A are symmetric, so we **can**
-			use the _symmetric_matrix_square_root function to find the roots of these
-			matrices.
-			Args:
-			sigma: a square, symmetric, real, positive semi-definite covariance matrix
-			sigma_v: same as sigma
-			Returns:
-			The trace of the positive square root of sigma*sigma_v
-			"""
-
-			# Note sqrt_sigma is called "A" in the proof above
-			sqrt_sigma = symmetric_matrix_square_root(sigma)
-
-			# This is sqrt(A sigma_v A) above
-			sqrt_a_sigmav_a = tf.matmul(sqrt_sigma, tf.matmul(sigma_v, sqrt_sigma))
-
-			if iscomplexobj(sqrt_a_sigmav_a):
-				sqrt_a_sigmav_a = sqrt_a_sigmav_a.real
-
-			return tf.linalg.trace(symmetric_matrix_square_root(sqrt_a_sigmav_a))
-
-
-		m = (tf.reduce_mean(input_tensor=self.act1, axis=0),)
-		m_w = (tf.reduce_mean(input_tensor=self.act2, axis=0),)
-		# Calculate the unbiased covariance matrix of first activations.
-		num_examples_real = tf.cast(tf.shape(input=self.act1)[0], tf.float64)
-		sigma = tf.cast(num_examples_real / (num_examples_real - 1),dtype = tf.float64) * tf.cast(tfp.stats.covariance(self.act1),dtype = tf.float64)
-		# Calculate the unbiased covariance matrix of second activations.
-		num_examples_generated = tf.cast(tf.shape(input=self.act2)[0], tf.float64)
-		sigma_w = tf.cast(num_examples_generated / (num_examples_generated - 1),dtype = tf.float64) * tf.cast(tfp.stats.covariance(self.act2),dtype = tf.float64)
-
-		# print(sigma.shape, sigma_w.shape)
-		sqrt_trace_component = trace_sqrt_product(sigma, sigma_w)
-
-		# Compute the two components of FID.
-
-		# First the covariance component.
-		# Here, note that trace(A + B) = trace(A) + trace(B)
-		trace = tf.linalg.trace(sigma + sigma_w) - 2.0 * sqrt_trace_component
-
-		# Next the distance between means.
-		mean = tf.reduce_sum(input_tensor=tf.math.squared_difference(m, m_w))  # Equivalent to L2 but more stable.
-		fid = tf.cast(trace, tf.float64) + tf.cast(mean, tf.float64)
-		self.fid = tf.cast(fid, tf.float64)
-		# print(fid)
-		self.FID_vec.append([fid.numpy(), self.total_count.numpy()])
-		if self.mode == 'metrics':
-			print("Final FID score - "+str(self.fid))
-			if self.res_flag:
-				self.res_file.write("Final FID score - "+str(self.fid))
-
-		if self.res_flag:
-			self.res_file.write("FID score - "+str(self.fid))
-
-
-		return fid
-
 	def eval_FID(self):
 		mu1, sigma1 = self.act1.mean(axis=0), cov(self.act1, rowvar=False)
 		mu2, sigma2 = self.act2.mean(axis=0), cov(self.act2, rowvar=False)
@@ -703,16 +554,15 @@ class GAN_ARCH(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2,
 
 		if self.res_flag:
 			self.res_file.write("FID score - "+str(self.fid))
-		# self.eval_FID_new()
-		# np.save(self.impath+'_FID.npy',np.array(self.FID_vec))
+
 		return
 
 
 	def print_FID_ACGAN(self):
 
-		# np.save(self.metricpath+'FID_even.npy',np.array(self.FID_vec_even))
-		# np.save(self.metricpath+'FID_odd.npy',np.array(self.FID_vec_odd))
-		# np.save(self.metricpath+'FID_sharp.npy',np.array(self.FID_vec_sharp))
+		np.save(self.metricpath+'FID_even.npy',np.array(self.FID_vec_even))
+		np.save(self.metricpath+'FID_odd.npy',np.array(self.FID_vec_odd))
+		np.save(self.metricpath+'FID_sharp.npy',np.array(self.FID_vec_sharp))
 		np.save(self.metricpath+'FID_single.npy',np.array(self.FID_vec_single))
 
 		path = self.metricpath
@@ -729,50 +579,50 @@ class GAN_ARCH(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2,
 				"pgf.rcfonts": False,    # don't setup fonts from rc parameters
 			})
 
-		# vals = list(np.array(self.FID_vec_even)[:,0])
-		# locs = list(np.array(self.FID_vec_even)[:,1])
+		vals = list(np.array(self.FID_vec_even)[:,0])
+		locs = list(np.array(self.FID_vec_even)[:,1])
 
-		# with PdfPages(path+'FID_plot_even.pdf') as pdf:
+		with PdfPages(path+'FID_plot_even.pdf') as pdf:
 
-		# 	fig1 = plt.figure(figsize=(3.5, 3.5))
-		# 	ax1 = fig1.add_subplot(111)
-		# 	ax1.cla()
-		# 	ax1.get_xaxis().set_visible(True)
-		# 	ax1.get_yaxis().set_visible(True)
-		# 	ax1.plot(locs,vals, c='r',label = 'FID vs. Iterations')
-		# 	ax1.legend(loc = 'upper right')
-		# 	pdf.savefig(fig1)
-		# 	plt.close(fig1)
+			fig1 = plt.figure(figsize=(3.5, 3.5))
+			ax1 = fig1.add_subplot(111)
+			ax1.cla()
+			ax1.get_xaxis().set_visible(True)
+			ax1.get_yaxis().set_visible(True)
+			ax1.plot(locs,vals, c='r',label = 'FID vs. Iterations')
+			ax1.legend(loc = 'upper right')
+			pdf.savefig(fig1)
+			plt.close(fig1)
 
-		# vals = list(np.array(self.FID_vec_odd)[:,0])
-		# locs = list(np.array(self.FID_vec_odd)[:,1])
+		vals = list(np.array(self.FID_vec_odd)[:,0])
+		locs = list(np.array(self.FID_vec_odd)[:,1])
 
-		# with PdfPages(path+'FID_plot_odd.pdf') as pdf:
+		with PdfPages(path+'FID_plot_odd.pdf') as pdf:
 
-		# 	fig1 = plt.figure(figsize=(3.5, 3.5))
-		# 	ax1 = fig1.add_subplot(111)
-		# 	ax1.cla()
-		# 	ax1.get_xaxis().set_visible(True)
-		# 	ax1.get_yaxis().set_visible(True)
-		# 	ax1.plot(locs,vals, c='r',label = 'FID vs. Iterations')
-		# 	ax1.legend(loc = 'upper right')
-		# 	pdf.savefig(fig1)
-		# 	plt.close(fig1)
+			fig1 = plt.figure(figsize=(3.5, 3.5))
+			ax1 = fig1.add_subplot(111)
+			ax1.cla()
+			ax1.get_xaxis().set_visible(True)
+			ax1.get_yaxis().set_visible(True)
+			ax1.plot(locs,vals, c='r',label = 'FID vs. Iterations')
+			ax1.legend(loc = 'upper right')
+			pdf.savefig(fig1)
+			plt.close(fig1)
 
-		# vals = list(np.array(self.FID_vec_sharp)[:,0])
-		# locs = list(np.array(self.FID_vec_sharp)[:,1])
+		vals = list(np.array(self.FID_vec_sharp)[:,0])
+		locs = list(np.array(self.FID_vec_sharp)[:,1])
 
-		# with PdfPages(path+'FID_plot_sharp.pdf') as pdf:
+		with PdfPages(path+'FID_plot_sharp.pdf') as pdf:
 
-		# 	fig1 = plt.figure(figsize=(3.5, 3.5))
-		# 	ax1 = fig1.add_subplot(111)
-		# 	ax1.cla()
-		# 	ax1.get_xaxis().set_visible(True)
-		# 	ax1.get_yaxis().set_visible(True)
-		# 	ax1.plot(locs,vals, c='r',label = 'FID vs. Iterations')
-		# 	ax1.legend(loc = 'upper right')
-		# 	pdf.savefig(fig1)
-		# 	plt.close(fig1)
+			fig1 = plt.figure(figsize=(3.5, 3.5))
+			ax1 = fig1.add_subplot(111)
+			ax1.cla()
+			ax1.get_xaxis().set_visible(True)
+			ax1.get_yaxis().set_visible(True)
+			ax1.plot(locs,vals, c='r',label = 'FID vs. Iterations')
+			ax1.legend(loc = 'upper right')
+			pdf.savefig(fig1)
+			plt.close(fig1)
 
 		vals = list(np.array(self.FID_vec_single)[:,0])
 		locs = list(np.array(self.FID_vec_single)[:,1])
@@ -838,7 +688,6 @@ class GAN_ARCH(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2,
 			pdf.savefig(fig1)
 			plt.close(fig1)
 
-
 	def print_FID(self):
 		path = self.metricpath
 		#Colab has issues with latex. Better not waste time printing on Colab. Use the NPY later, offline,...
@@ -891,221 +740,7 @@ class GAN_ARCH(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2,
 		# 	pdf.savefig(fig1)
 		# 	plt.close(fig1)
 
-	def eval_recon(self):
-		# print('Evaluating Recon Loss\n')
-		mse = tf.keras.losses.MeanSquaredError()
-		for image_batch in self.recon_dataset:
-			# print("batch 1\n")
-			recon_images = self.Decoder(self.Encoder(image_batch, training= False) , training = False)
-			try:
-				recon_loss = 0.5*(recon_loss) + 0.25*tf.reduce_mean(tf.abs(image_batch - recon_images)) + 0.75*(mse(image_batch,recon_images))
-			except:
-				recon_loss = 0.5*tf.reduce_mean(tf.abs(image_batch - recon_images)) + 1.5*(mse(image_batch,recon_images))
-		self.recon_vec.append([recon_loss, self.total_count.numpy()])
-		if self.mode == 'metrics':
-			print("Final Reconstruction error - "+str(recon_loss))
-			if self.res_flag:
-				self.res_file.write("Final Reconstruction error - "+str(recon_loss))
 
-		if self.res_flag:
-			self.res_file.write("Reconstruction error - "+str(recon_loss))
-
-
-	def print_recon(self):
-		path = self.metricpath
-		#Colab has issues with latex. Better not waste time printing on Colab. Use the NPY later, offline,...
-		if self.colab:
-			from matplotlib.backends.backend_pdf import PdfPages
-		else:
-			from matplotlib.backends.backend_pgf import PdfPages
-			plt.rcParams.update({
-				"pgf.texsystem": "pdflatex",
-				"font.family": "helvetica",  # use serif/main font for text elements
-				"font.size":12,
-				"text.usetex": True,     # use inline math for ticks
-				"pgf.rcfonts": False,    # don't setup fonts from rc parameters
-			})
-
-		vals = list(np.array(self.recon_vec)[:,0])
-		locs = list(np.array(self.recon_vec)[:,1])
-
-		with PdfPages(path+'recon_plot.pdf') as pdf:
-
-			fig1 = plt.figure(figsize=(3.5, 3.5))
-			ax1 = fig1.add_subplot(111)
-			ax1.cla()
-			ax1.get_xaxis().set_visible(True)
-			ax1.get_yaxis().set_visible(True)
-			ax1.plot(locs,vals, c='r',label = 'Reconstruction Error')
-			ax1.legend(loc = 'upper right')
-			pdf.savefig(fig1)
-			plt.close(fig1)
-
-
-	def KLD_sample_estimate(self,P,Q):
-		def skl_estimator(s1, s2, k=1):
-			from sklearn.neighbors import NearestNeighbors
-			### Code Courtesy nheartland 
-			### URL : https://github.com/nhartland/KL-divergence-estimators/blob/master/src/knn_divergence.py
-			""" KL-Divergence estimator using scikit-learn's NearestNeighbours
-			s1: (N_1,D) Sample drawn from distribution P
-			s2: (N_2,D) Sample drawn from distribution Q
-			k: Number of neighbours considered (default 1)
-			return: estimated D(P|Q)
-			"""
-			n, m = len(s1), len(s2)
-			d = float(s1.shape[1])
-			D = np.log(m / (n - 1))
-
-			s1_neighbourhood = NearestNeighbors(k+1, 10).fit(s1)
-			s2_neighbourhood = NearestNeighbors(k, 10).fit(s2)
-
-			for p1 in s1:
-				s1_distances, indices = s1_neighbourhood.kneighbors([p1], k+1)
-				s2_distances, indices = s2_neighbourhood.kneighbors([p1], k)
-				rho = s1_distances[0][-1]
-				nu = s2_distances[0][-1]
-				D += (d/n)*np.log(nu/rho)
-			return D
-		KLD = skl_estimator(P,Q)
-		self.KLD_vec.append([KLD, self.total_count.numpy()])
-		return
-
-	def KLD_Gaussian(self,P,Q):
-
-		def get_mean(f):
-			return np.mean(f,axis = 0).astype(np.float64)
-		def get_cov(f):
-			return np.cov(f,rowvar = False).astype(np.float64)
-		def get_std(f):
-			return np.std(f).astype(np.float64)
-		try:
-			if self.data == 'g1':
-				Distribution = tfd.Normal
-				P_dist = Distribution(loc=get_mean(P), scale=get_std(P))
-				Q_dist = Distribution(loc=get_mean(Q), scale=get_std(Q))
-			else:
-				Distribution = tfd.MultivariateNormalFullCovariance
-				P_dist = Distribution(loc=get_mean(P), covariance_matrix=get_cov(P))
-				Q_dist = Distribution(loc=get_mean(Q), covariance_matrix=get_cov(Q))
-		
-			self.KLD_vec.append([P_dist.kl_divergence(Q_dist).numpy(), self.total_count.numpy()])
-		except:
-			print("KLD error - Falling back to prev value")
-			try:
-				self.KLD_vec.append([self.KLD_vec[-1]*0.9, self.total_count.numpy()])
-			except:
-				self.KLD_vec.append([0, self.total_count.numpy()])
-		# print('KLD: ',self.KLD_vec[-1])
-		return
-
-
-	def update_KLD(self):
-		
-		if self.topic == 'ELeGANt':
-			if self.loss == 'FS' and (self.latent_kind == 'AE' or self.latent_kind == 'AAE'):
-				self.KLD_func(self.reals_enc,self.fakes_enc)
-			else:
-				self.KLD_func(self.reals,self.fakes)
-		elif self.topic == 'AAE':
-			self.KLD_func(self.fakes_enc,self.reals_enc)
-		else:
-			self.KLD_func(self.reals,self.fakes)
-
-
-		# if self.topic == 'ELeGANt':
-		# 	if self.loss == 'deq' and (self.latent_kind == 'AE' or self.latent_kind == 'AAE'):
-		# 		pd_dist = MultiVarNormal(loc=get_mean(self.reals_enc), covariance_matrix=get_cov(self.reals_enc))
-		# 		pg_dist = MultiVarNormal(loc=get_mean(self.fakes_enc), covariance_matrix=get_cov(self.fakes_enc))
-		# 	else:
-		# 		pd_dist = MultiVarNormal(loc=get_mean(self.reals), covariance_matrix=get_cov(self.reals))
-		# 		pg_dist = MultiVarNormal(loc=get_mean(self.fakes), covariance_matrix=get_cov(self.fakes))
-		# elif self.topic == 'AAE':
-		# 	pg_dist = MultiVarNormal(loc=get_mean(self.reals_enc), covariance_matrix=get_cov(self.reals_enc))
-		# 	pd_dist = MultiVarNormal(loc=get_mean(self.fakes_enc), covariance_matrix=get_cov(self.fakes_enc))
-		# else:
-		# 	pd_dist = MultiVarNormal(loc=get_mean(self.reals), covariance_matrix=get_cov(self.reals))
-		# 	pg_dist = MultiVarNormal(loc=get_mean(self.fakes), covariance_matrix=get_cov(self.fakes))
-
-
-		# print(pd_dist.kl_divergence(pg_dist))
-		# print(X)
-
-			
-
-	def print_KLD(self):
-		path = self.metricpath
-		if self.colab:
-			from matplotlib.backends.backend_pdf import PdfPages
-			plt.rc('text', usetex=False)
-		else:
-			from matplotlib.backends.backend_pgf import PdfPages
-			plt.rcParams.update({
-				"pgf.texsystem": "pdflatex",
-				"font.family": "helvetica",  # use serif/main font for text elements
-				"font.size":12,
-				"text.usetex": True,     # use inline math for ticks
-				"pgf.rcfonts": False,    # don't setup fonts from rc parameters
-			})
-		# if self.topic == 'ELeGANt':
-		# 	if self.loss == 'deq' and self.latent_kind == 'AE':
-		# 		basis = np.expand_dims(np.array(np.arange(0,self.total_count.numpy() - self.AE_steps)),axis=1)
-		# else:
-		# 	basis = np.expand_dims(np.array(np.arange(0,self.total_count.numpy(),self.KLD_steps)),axis=1)
-
-		# basis  = np.expand_dims(np.array(np.arange(0,len(self.KLD))),axis=1)*self.KLD_steps
-		vals = list(np.array(self.KLD_vec)[:,0])
-		locs = list(np.array(self.KLD_vec)[:,1])
-		if self.topic == 'ELeGANt':
-			if self.loss == 'FS' and self.latent_kind == 'AE':
-				locs = list(np.array(self.KLD_vec)[:,1] - self.AE_steps)
-		
-
-		with PdfPages(path+'KLD_plot.pdf') as pdf:
-
-			fig1 = plt.figure(figsize=(3.5, 3.5))
-			ax1 = fig1.add_subplot(111)
-			ax1.cla()
-			ax1.get_xaxis().set_visible(True)
-			ax1.get_yaxis().set_visible(True)
-			ax1.plot(locs,vals, c='r',label = 'KL Divergence Vs. Iterations')
-			ax1.legend(loc = 'upper right')
-			pdf.savefig(fig1)
-			plt.close(fig1)
-
-	def update_Lambda(self):
-		self.lambda_vec.append([self.lamb.numpy(),self.total_count.numpy()])
-
-	def print_Lambda(self):
-		path = self.metricpath
-		if self.colab:
-			from matplotlib.backends.backend_pdf import PdfPages
-			plt.rc('text', usetex=False)
-		else:
-			from matplotlib.backends.backend_pgf import PdfPages
-			plt.rcParams.update({
-				"pgf.texsystem": "pdflatex",
-				"font.family": "helvetica",  # use serif/main font for text elements
-				"font.size": 12,
-				"text.usetex": True,     # use inline math for ticks
-				"pgf.rcfonts": False,    # don't setup fonts from rc parameters
-			})
-
-		# lbasis  = np.expand_dims(np.array(np.arange(0,len(self.lambda_vec))),axis=1)
-		vals = list(np.array(self.lambda_vec)[:,0])
-		locs = list(np.array(self.lambda_vec)[:,1])
-
-		with PdfPages(path+'Lambda_plot.pdf') as pdf:
-
-			fig1 = plt.figure(figsize=(3.5, 3.5))
-			ax1 = fig1.add_subplot(111)
-			ax1.cla()
-			ax1.get_xaxis().set_visible(True)
-			ax1.get_yaxis().set_visible(True)
-			ax1.plot(locs,vals, c='r',label = 'Lambda Vs. Iterations')
-			ax1.legend(loc = 'upper right')
-			pdf.savefig(fig1)
-			plt.close(fig1)
 
 
 	# def update_GradGrid(self):
@@ -1297,50 +932,3 @@ class GAN_ARCH(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2,
 			ax1.legend(loc = 'upper right')
 			pdf.savefig(fig1)
 			plt.close(fig1)
-
-	# def updateKLD(self):
-	# 	if self.topic == 'ELeGANt':
-	# 		if self.loss == 'deq' and self.latent_kind == 'AE' or self.latent_kind == 'AAE':
-	# 			pd_dist = tfd.MultivariateNormalFullCovariance(loc=np.mean(self.reals_enc, axis = 0), covariance_matrix=np.cov(self.reals_enc, rowvar = False).astype(np.float32))
-	# 			pg_dist = tfd.MultivariateNormalFullCovariance(loc=np.mean(self.fakes_enc, axis = 0), covariance_matrix=np.cov(self.fakes_enc,rowvar = False).astype(np.float32))
-	# 			cov = (0.25*(np.cov(self.reals_enc, rowvar = False) + np.cov(self.fakes_enc, rowvar = False))).astype(np.float32)
-	# 			lc = (0.5*(np.mean(self.fakes_enc, axis = 0) +  np.mean(self.reals_enc, axis = 0))).astype(np.float32) 
-	# 			pm_dist = tfd.MultivariateNormalFullCovariance(loc=lc, covariance_matrix = cov)
-	# 	elif self.topic == 'AAE':
-	# 		pg_dist = tfd.MultivariateNormalFullCovariance(loc=np.mean(self.reals_enc, axis = 0), covariance_matrix=np.cov(self.reals_enc,rowvar = False).astype(np.float32))
-	# 		pd_dist = tfd.MultivariateNormalFullCovariance(loc=np.mean(self.fakes_enc, axis = 0), covariance_matrix=np.cov(self.fakes_enc,rowvar = False).astype(np.float32))
-	# 		cov = (0.25*(np.cov(self.reals_enc, rowvar = False) + np.cov(self.fakes_enc, rowvar = False))).astype(np.float32)
-	# 		lc = (0.5*(np.mean(self.fakes_enc, axis = 0) +  np.mean(self.reals_enc, axis = 0))).astype(np.float32) 
-	# 		pm_dist = tfd.MultivariateNormalFullCovariance(loc=lc, covariance_matrix = cov)
-	# 	else:
-	# 		pd_dist = tfd.MultivariateNormalFullCovariance(loc=np.mean(self.reals, axis = 0), covariance_matrix=np.cov(self.reals,rowvar = False).astype(np.float32))
-	# 		pg_dist = tfd.MultivariateNormalFullCovariance(loc=np.mean(self.fakes, axis = 0), covariance_matrix=np.cov(self.fakes,rowvar = False).astype(np.float32))
-	# 		cov = (0.25*(np.cov(self.reals, rowvar = False) + np.cov(self.fakes, rowvar = False))).astype(np.float32)
-	# 		lc = (0.5*(np.mean(self.fakes, axis = 0) +  np.mean(self.reals, axis = 0))).astype(np.float32) 
-	# 		pm_dist = tfd.MultivariateNormalFullCovariance(loc=lc, covariance_matrix = cov)
-	# 	self.KLD.append(0.5*pd_dist.kl_divergence(pm_dist) + 0.5*pg_dist.kl_divergence(pm_dist))	
-
-	# def updateKLD(self):
-	# 	if self.topic == 'ELeGANt':
-	# 		if self.loss == 'deq' and self.latent_kind == 'AE':
-	# 			pd_dist = tfd.MultivariateNormalDiag(loc=np.mean(self.reals_enc).astype(np.float32), scale_diag=np.diagonal(np.cov(self.reals_enc)).astype(np.float32))
-	# 			pg_dist = tfd.MultivariateNormalDiag(loc=np.mean(self.fakes_enc).astype(np.float32), scale_diag=np.diagonal(np.cov(self.fakes_enc)).astype(np.float32))
-	# 			# sc = np.diagonal(0.5*(np.cov(self.reals_enc) + np.cov(self.fakes_enc))).astype(np.float32)
-	# 			# lc = (0.5*(np.mean(self.fakes_enc) +  np.mean(self.reals_enc))).astype(np.float32) 
-	# 			# pm_dist = tfd.MultivariateNormalDiag(loc=lc, scale_diag = sc)
-	# 	elif self.topic == 'AAE':
-	# 		pg_dist = tfd.MultivariateNormalDiag(loc=np.mean(self.reals_enc).astype(np.float32), scale_diag=np.diagonal(np.cov(self.reals_enc)).astype(np.float32))
-	# 		pd_dist = tfd.MultivariateNormalDiag(loc=np.mean(self.fakes_enc).astype(np.float32), scale_diag=np.diagonal(np.cov(self.fakes_enc)).astype(np.float32))
-	# 		# sc = np.diagonal(0.5*(np.cov(self.reals_enc) + np.cov(self.fakes_enc))).astype(np.float32)
-	# 		# lc = (0.5*(np.mean(self.fakes_enc) +  np.mean(self.reals_enc))).astype(np.float32)
-	# 		# pm_dist = tfd.MultivariateNormalDiag(loc=lc, scale_diag = sc)
-	# 	else:
-	# 		pd_dist = tfd.MultivariateNormalDiag(loc=np.mean(self.reals), scale_diag=np.diagonal(np.cov(self.reals)))
-	# 		pg_dist = tfd.MultivariateNormalDiag(loc=np.mean(self.fakes), scale_diag=np.diagonal(np.cov(self.fakes)))
-	# 		# sc = np.diagonal(0.5*(np.cov(self.reals_enc) + np.cov(self.fakes_enc))).astype(np.float32)
-	# 		# lc = (0.5*(np.mean(self.fakes_enc) +  np.mean(self.reals_enc))).astype(np.float32) 
-	# 		# pm_dist = tfd.MultivariateNormalDiag(loc=lc, scale_diag = sc)
-
-
-	# 	self.KLD.append(pd_dist.kl_divergence(pg_dist))	
-
