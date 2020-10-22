@@ -168,7 +168,7 @@ class GAN_DATA_Base(GAN_DATA_ops):
 		if self.testcase == 'odd':
 			train_images = train_images[np.where(train_labels%2 != 0)[0]]
 			self.fid_train_images = train_images
-		if self.testcase == 'sharp':
+		if self.testcase == 'overlap':
 			train_images = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
 			self.fid_train_images = train_images
 
@@ -368,12 +368,12 @@ class GAN_DATA_RumiGAN(GAN_DATA_ops):
 			false_images = train_images[np.where(train_labels%2 == 0)[0]]
 			self.fid_train_images = true_images
 			self.fid_others = false_images
-		if self.testcase == 'sharp':
+		if self.testcase == 'overlap':
 			true_images = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
 			false_images = train_images[np.where(np.any([zero, two, three, six, eight, nine],axis=0))[0]]
 			self.fid_train_images = true_images
 			self.fid_others = false_images
-		if self.testcase == 'sharpSVHN':
+		if self.testcase == 'overlapSVHN':
 			SVHN_train_data = sio.loadmat('data/SVHN/train_32x32.mat')
 			# access to the dict
 			train_images_SVHN = tf.image.resize(tf.image.rgb_to_grayscale(tf.transpose(tf.cast(SVHN_train_data['X'],dtype='float32'),[3,0,1,2])),[self.output_size,self.output_size]).numpy()
@@ -618,13 +618,13 @@ class GAN_DATA_CondGAN(GAN_DATA_ops):
 		self.fid_images_even = train_images[np.where(train_labels%2 == 0)[0]]
 		self.fid_images_odd = train_images[np.where(train_labels%2 != 0)[0]]
 		self.fid_images_single = train_images[np.where(train_labels == self.number)[0]]
-		self.fid_images_sharp = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
+		self.fid_images_overlap = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
 
 		if self.testcase == 'single':
 			self.fid_images_even = train_images[np.where(train_labels%2 == 0)[0]]
 			self.fid_images_odd = train_images[np.where(train_labels%2 != 0)[0]]
 			self.fid_images_single = train_images[np.where(train_labels == self.number)[0]]
-			self.fid_images_sharp = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
+			self.fid_images_overlap = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
 			# train_images = train_images[np.where(train_labels == self.number)[0]]
 			# train_labels = train_labels[np.where(train_labels == self.number)[0]]
 			# self.fid_train_images = train_images[np.where(train_labels == self.number)[0]]
@@ -633,7 +633,7 @@ class GAN_DATA_CondGAN(GAN_DATA_ops):
 			self.fid_images_even = train_images[np.where(train_labels%2 == 0)[0]]
 			self.fid_images_odd = train_images[np.where(train_labels%2 != 0)[0]]
 			
-			self.fid_images_sharp = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
+			self.fid_images_overlap = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
 
 			# train_images = np.concatenate( (np.repeat(train_images[np.where(train_labels == self.number)[0]][0:100],50,axis = 0), train_images[np.where(train_labels != self.number)[0]]), axis = 0)
 			# train_labels = np.concatenate( (np.repeat(train_labels[np.where(train_labels == self.number)[0]][0:100],50,axis = 0), train_labels[np.where(train_labels != self.number)[0]]), axis = 0)
@@ -664,7 +664,7 @@ class GAN_DATA_CondGAN(GAN_DATA_ops):
 			self.fid_images_even = train_images[np.where(train_labels%2 == 0)[0]]
 			self.fid_images_odd = train_images[np.where(train_labels%2 != 0)[0]]
 			self.fid_images_single = train_images[np.where(train_labels == self.number)[0]]
-			self.fid_images_sharp = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
+			self.fid_images_overlap = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
 
 		if self.testcase == 'odd':
 			# train_images = train_images[np.where(train_labels%2 != 0)[0]]
@@ -672,12 +672,12 @@ class GAN_DATA_CondGAN(GAN_DATA_ops):
 			self.fid_images_even = train_images[np.where(train_labels%2 == 0)[0]]
 			self.fid_images_odd = train_images[np.where(train_labels%2 != 0)[0]]
 			self.fid_images_single = train_images[np.where(train_labels == self.number)[0]]
-			self.fid_images_sharp = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
-		if self.testcase == 'sharp':
+			self.fid_images_overlap = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
+		if self.testcase == 'overlap':
 			self.fid_images_even = train_images[np.where(train_labels%2 == 0)[0]]
 			self.fid_images_odd = train_images[np.where(train_labels%2 != 0)[0]]
 			self.fid_images_single = train_images[np.where(train_labels == self.number)[0]]
-			self.fid_images_sharp = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
+			self.fid_images_overlap = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
 			# train_images = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
 			# self.fid_train_images = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
 
@@ -801,7 +801,7 @@ class GAN_DATA_CondGAN(GAN_DATA_ops):
 			self.fid_train_images = train_images[np.where(train_labels%2 == 0)[0]]
 		if self.testcase == 'odd':
 			self.fid_train_images = train_images[np.where(train_labels%2 != 0)[0]]
-		if self.testcase == 'sharp':
+		if self.testcase == 'overlap':
 			self.fid_train_images = train_images[np.where(np.any([one, two, four, five, seven, nine],axis=0))[0]]
 		if self.testcase == 'animals':
 			self.fid_train_images = train_images[np.where(np.any([two, three, four, five, six, seven],axis=0))[0]]

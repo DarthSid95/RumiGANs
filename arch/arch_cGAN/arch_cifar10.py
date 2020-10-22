@@ -19,7 +19,6 @@ class ARCH_cifar10():
 
 	def generator_model_cifar10(self):
 		# init_fn = tf.random_normal_initializer(mean=0.0, stddev=0.05, seed=None)
-		# init_fn = tf.function(init_fn, autograph=False)
 		init_fn = tf.keras.initializers.glorot_uniform()
 		init_fn = tf.function(init_fn, autograph=False)
 
@@ -54,16 +53,7 @@ class ARCH_cifar10():
 			gen_multiply = tf.keras.layers.Multiply()([noise_ip,class_embed])
 			gen_dense = layers.Dense(int(self.output_size/8)*int(self.output_size/8)*256)(gen_multiply)
 			gen_ip = layers.Reshape((int(self.output_size/8), int(self.output_size/8), 256))(gen_dense)
-		# enc_res = tf.keras.layers.Reshape([1,1,int(self.noise_dims)])(inputs) #1x1xlatent
-		# dense = tf.keras.layers.Dense(2*2*512, activation='relu')(inputs)
-		# dense = tf.keras.layers.BatchNormalization(momentum=0.9)(dense)
-		# dense = tf.keras.layers.LeakyReLU()(dense)
-		# dense = tf.keras.layers.Reshape((2, 2, 512))(dense)
 
-		# denc4 = tf.keras.layers.Conv2DTranspose(512, 5, strides=2,padding='same',kernel_initializer=init_fn,use_bias=True)(dense) #2x2x128
-		# denc4 = tf.keras.layers.BatchNormalization(momentum=0.9)(denc4)
-		# # denc4 = tf.keras.layers.Dropout(0.5)(denc4)
-		# denc4 = tf.keras.layers.LeakyReLU()(denc4)
 
 		denc3 = tf.keras.layers.Conv2DTranspose(256, 5, strides=2,padding='same',kernel_initializer=init_fn,use_bias=True)(gen_ip) #4x4x256
 		denc3 = tf.keras.layers.BatchNormalization(momentum=0.9)(denc3)
@@ -91,7 +81,6 @@ class ARCH_cifar10():
 
 	def discriminator_model_cifar10(self):
 		# init_fn = tf.random_normal_initializer(mean=0.0, stddev=0.05, seed=None)
-		# init_fn = tf.function(init_fn, autograph=False)
 		init_fn = tf.keras.initializers.glorot_uniform()
 		init_fn = tf.function(init_fn, autograph=False)
 
@@ -115,12 +104,6 @@ class ARCH_cifar10():
 		conv4 = layers.BatchNormalization()(conv4)
 		conv4 = layers.LeakyReLU()(conv4)
 
-
-		# # model.add(layers.Conv2D(32, (5, 5), strides=(1, 1), padding='same', kernel_initializer=init_fn, input_shape=[int(self.output_size), int(self.output_size), 1]))
-		# # model.add(layers.LeakyReLU())
-
-		# model.add(layers.Dropout(0.3))
-
 		flat = layers.Flatten()(conv3)
 		dense1 = layers.Dense(50)(flat)
 
@@ -143,8 +126,6 @@ class ARCH_cifar10():
 			inner_prod = tf.keras.layers.Multiply()([avg_pool, class_den1])
 
 		real_vs_fake = layers.Add()([dense2, inner_prod])
-		# if self.gan == 'SGAN':
-		# 	real_vs_fake = layers.Activation( activation = 'sigmoid')(real_vs_fake)
 
 		model = tf.keras.Model(inputs = [inputs,image_class], outputs= real_vs_fake)
 
@@ -175,30 +156,6 @@ class ARCH_cifar10():
 			plt.show()
 		else:
 			plt.close()	
-		# size_figure_grid = 10
-		# fig, ax = plt.subplots(size_figure_grid, size_figure_grid, figsize=(10, 10))
-		# for i in range(size_figure_grid):
-		# 	for j in range(size_figure_grid):
-		# 		ax[i, j].get_xaxis().set_visible(False)
-		# 		ax[i, j].get_yaxis().set_visible(False)
-				
-		# images = images.numpy()
-		# for k in range(size_figure_grid*size_figure_grid):
-		# 	i = k // size_figure_grid
-		# 	j = k % size_figure_grid
-		# 	ax[i, j].cla()
-		# 	ax[i, j].imshow(images[k], cmap='gray')
-
-		# label = 'Epoch {0}'.format(num_epoch)
-		# fig.text(0.5, 0.04, label, ha='center')
-
-		# if save:
-		# 	plt.savefig(path)
-
-		# if show:
-		# 	plt.show()
-		# else:
-		# 	plt.close()
 		logger.setLevel(old_level)
 
 
@@ -210,13 +167,6 @@ class ARCH_cifar10():
 		def data_preprocess(image):
 			with tf.device('/CPU'):
 				image = tf.image.resize(image,[80,80])
-				# This will convert to float values in [0, 1]
-
-				# image = tf.divide(image,255.0)
-				# image = tf.scalar_mul(2.0,image)
-				# image = tf.subtract(image,1.0)
-
-				# image = tf.image.convert_image_dtype(image, tf.float16)
 			return image
 
 
@@ -238,22 +188,17 @@ class ARCH_cifar10():
 
 		if self.mode == 'fid':
 			print(self.checkpoint_dir)
-			# print('logs/130919_ELeGANt_mnist_lsgan_base_01/130919_ELeGANt_mnist_lsgan_base_Results_checkpoints')
 			self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
 			print('Models Loaded Successfully')
 
 		with tf.device(self.device):
 			for image_batch in self.fid_image_dataset:
-				# input_class = self.number*np.ones([self.fid_batch_size,1]).astype('int32')
-				# noise = tf.random.normal([self.fid_batch_size, self.noise_dims],self.noise_mean, self.noise_stddev)
+
 				noise, input_class = self.get_noise('test',self.fid_batch_size)
 				if self.label_style == 'base':
 					input_class = tf.one_hot(np.squeeze(input_class), depth = self.num_clsses)
-				preds = self.generator([noise,input_class], training=False)
-				# preds = preds[:,:,:].numpy()		
+				preds = self.generator([noise,input_class], training=False)				
 				preds = tf.image.resize(preds, [80,80])
-				# preds = tf.scalar_mul(2.0,preds)
-				# preds = tf.subtract(preds,1.0)
 				preds = preds.numpy()
 
 				act1 = self.FID_model.predict(image_batch)
@@ -266,93 +211,3 @@ class ARCH_cifar10():
 					self.act2 = act2
 			self.eval_FID()
 			return
-
-
-	# def CIFAR10_Classifier(self):
-	# 	self.FID_model = tf.keras.applications.inception_v3.InceptionV3(include_top=False, pooling='avg', weights='imagenet', input_tensor=None, input_shape=(80,80,3), classes=1000)
-
-	# def FID_cifar10(self):
-	# 	self.CIFAR10_Classifier()
-	# 	if self.FID_load_flag == 0:
-	# 		### First time FID call setup
-	# 		self.FID_load_flag = 1
-	# 		self.FID_single_vec = []
-	# 		self.FID_animals_vec = []
-	# 		self.FID_odd_vec = []
-	# 		self.FID_sharp_vec = []
-	# 		# self.fid_train_images = self.train_data
-	# 		random_points = tf.keras.backend.random_uniform([1000], minval=0, maxval=int(self.fid_train_images.shape[0]), dtype='int32', seed=None)
-	# 		print(random_points)
-	# 		self.fid_train_images = self.fid_train_images[random_points]
-	# 		self.fid_train_images = tf.image.resize(self.fid_train_images, [80,80])
-	# 		self.fid_train_images = self.fid_train_images.numpy()
-
-
-	# 	if self.mode == 'fid':
-	# 		print(self.checkpoint_dir)
-	# 		# print('logs/130919_ELeGANt_mnist_lsgan_base_01/130919_ELeGANt_mnist_lsgan_base_Results_checkpoints')
-	# 		self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
-	# 		print('Models Loaded Successfully')
-
-		
-	# 	input_class = (np.ones([self.fid_train_images.shape[0],1])*self.number).astype('int32')
-	# 	preds = self.generator([tf.random.normal([self.fid_train_images.shape[0], self.noise_dims]), input_class], training=False)
-	# 	# preds = preds[:,:,:].numpy()		
-	# 	preds = tf.image.resize(preds, [80,80])
-	# 	preds = preds.numpy()
-
-	# 	# calculate latent representations
-	# 	self.act1 = self.FID_model.predict(self.fid_train_images)
-	# 	self.act2 = self.FID_model.predict(preds)
-	# 	self.eval_FID()
-	# 	self.FID_single_vec.append(self.fid)
-	# 	path = self.impath
-	# 	np.save(path+'_single_FID.npy',np.array(self.FID_single_vec))
-
-	# 	#ANIMALZZZ
-	# 	input_class = np.expand_dims(np.random.choice([2,3,4,5,6,7], self.fid_train_images.shape[0]), axis = 1).astype('int32')
-
-	# 	preds = self.generator([tf.random.normal([self.fid_train_images.shape[0], self.noise_dims]), input_class], training=False)
-	# 	# preds = preds[:,:,:].numpy()		
-	# 	preds = tf.image.resize(preds, [80,80])
-	# 	preds = preds.numpy()
-
-	# 	# calculate latent representations
-	# 	self.act1 = self.FID_model.predict(self.fid_train_images)
-	# 	self.act2 = self.FID_model.predict(preds)
-	# 	self.eval_FID()
-	# 	self.FID_animals_vec.append(self.fid)
-	# 	path = self.impath
-	# 	np.save(path+'_animals_FID.npy',np.array(self.FID_animals_vec))
-
-	# 	####ODDD
-	# 	input_class = np.expand_dims(np.random.choice([1,3,5,7,9], self.fid_train_images.shape[0]), axis = 1).astype('int32')
-
-	# 	preds = self.generator([tf.random.normal([self.fid_train_images.shape[0], self.noise_dims]), input_class], training=False)
-	# 	# preds = preds[:,:,:].numpy()		
-	# 	preds = tf.image.resize(preds, [80,80])
-	# 	preds = preds.numpy()
-
-	# 	# calculate latent representations
-	# 	self.act1 = self.FID_model.predict(self.fid_train_images)
-	# 	self.act2 = self.FID_model.predict(preds)
-	# 	self.eval_FID()
-	# 	self.FID_odd_vec.append(self.fid)
-	# 	path = self.impath
-	# 	np.save(path+'_odd_FID.npy',np.array(self.FID_odd_vec))
-
-	# 	### SHARPPPP
-	# 	input_class = np.expand_dims(np.random.choice([1,2,4,5,7,9], self.fid_train_images.shape[0]), axis = 1).astype('int32')
-
-	# 	preds = self.generator([tf.random.normal([self.fid_train_images.shape[0], self.noise_dims]), input_class], training=False)
-	# 	# preds = preds[:,:,:].numpy()		
-	# 	preds = tf.image.resize(preds, [80,80])
-	# 	preds = preds.numpy()
-
-	# 	# calculate latent representations
-	# 	self.act1 = self.FID_model.predict(self.fid_train_images)
-	# 	self.act2 = self.FID_model.predict(preds)
-	# 	self.eval_FID()
-	# 	self.FID_sharp_vec.append(self.fid)
-	# 	path = self.impath
-	# 	np.save(path+'_sharp_FID.npy',np.array(self.FID_sharp_vec))

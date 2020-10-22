@@ -80,7 +80,7 @@ Defined Testcases:
 MNIST/FMNIST:
 1. even - even numbers as positive class
 2. odd - odd numbers as positive class
-3. paper_rand - "Not true random - determinitic to the set selected in the paper" 
+3. overlap - "Not true random - determinitic to the set selected in the paper" 
 4. rand - 6 random classes as positive, 6 as negative
 5. single - learn a single digit in MNIST - uses "number" flag to deice which number
 6. few - learn a single digit (as minority positive) in MNIST - uses "number" flag to deice which number, "num_few" to decide how many samples to pick for minority class 

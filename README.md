@@ -12,11 +12,11 @@ This code contained the implementations of baseline SGAN, LSGAN, ACGAN, TACGAN, 
 
 ### Requirements
 
-The source code is a <Under Construction> 
+The source code is "Under Construction" 
 
             
 ### Build
-* <Under Construction>
+* "Under Construction"
 
 ### Links
 
