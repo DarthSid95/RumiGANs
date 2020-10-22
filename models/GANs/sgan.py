@@ -21,6 +21,7 @@ class SGAN_Base(GAN_Base):
 		GAN_Base.__init__(self,FLAGS_dict)
 
 	def main_func(self):
+
 		with tf.device(self.device):
 			self.total_count = tf.Variable(0,dtype='int64')
 			self.generator = eval(self.gen_model)
@@ -54,13 +55,16 @@ class SGAN_Base(GAN_Base):
 		self.checkpoint_prefix = os.path.join(self.checkpoint_dir, "ckpt")
 
 		if self.resume:
-			# self.total_count = int(temp.split('-')[-1])
-			self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
 			try:
-				self.generator = tf.keras.models.load_model(self.checkpoint_dir+'/model_generator.h5')
-				self.discriminator = tf.keras.models.load_model(self.checkpoint_dir+'/model_discriminator.h5')
+				self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
 			except:
-				print("Couldn't load Model files. Only Checkpoint loaded")
+				print("Checkpoint loading Failed. It could be a model mismatch. H5 files will be loaded instead")
+				try:
+					self.generator = tf.keras.models.load_model(self.checkpoint_dir+'/model_generator.h5')
+					self.discriminator = tf.keras.models.load_model(self.checkpoint_dir+'/model_discriminator.h5')
+				except:
+					print("H5 file loading also failed. Please Check the LOG_FOLDER and RUN_ID flags")
+
 			print("Model restored...")
 			print("Starting at Iteration - "+str(self.total_count.numpy()))
 			print("Starting at Epoch - "+str(int((self.total_count.numpy() * self.batch_size_big) / (self.train_data.shape[0])) + 1))
@@ -112,8 +116,6 @@ class SGAN_Base(GAN_Base):
 	def print_batch_outputs(self,epoch):		
 		if self.total_count.numpy() <= 2:
 			self.generate_and_save_batch(epoch)
-		if (self.total_count.numpy() % 100) == 0 and self.data in ['g1', 'g2']:
-			self.generate_and_save_batch(epoch)
 		if (self.total_count.numpy() % self.save_step.numpy()) == 0:
 			self.generate_and_save_batch(epoch)
 
@@ -155,17 +157,6 @@ class SGAN_Base(GAN_Base):
 
 		self.G_loss = G_fake_loss
 
-	def loss_logdiff(self):
-		cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
-
-		D_real_loss = cross_entropy(tf.ones_like(self.real_output), self.real_output)
-		D_fake_loss = cross_entropy(tf.zeros_like(self.fake_output), self.fake_output)
-		self.D_loss = D_real_loss + D_fake_loss
-
-		G_fake_loss = cross_entropy(tf.ones_like(self.fake_output), self.fake_output)
-		G_sim_loss = -tf.reduce_mean(tf.math.log(tf.reduce_sum(tf.reduce_sum(tf.math.abs(tf.subtract(self.fakes[0:-1],self.fakes[1:])), axis = 1), axis = 1)))
-
-		self.G_loss = G_fake_loss + G_sim_loss
 
 
 '''***********************************************************************************
@@ -209,10 +200,15 @@ class SGAN_ACGAN(GAN_ACGAN):
 		self.checkpoint_prefix = os.path.join(self.checkpoint_dir, "ckpt")
 
 		if self.resume:
-			# self.total_count = int(temp.split('-')[-1])
-			self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
-			self.generator = tf.keras.models.load_model(self.checkpoint_dir+'/model_generator.h5')
-			self.discriminator = tf.keras.models.load_model(self.checkpoint_dir+'/model_discriminator.h5')
+			try:
+				self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
+			except:
+				print("Checkpoint loading Failed. It could be a model mismatch. H5 files will be loaded instead")
+				try:
+					self.generator = tf.keras.models.load_model(self.checkpoint_dir+'/model_generator.h5')
+					self.discriminator = tf.keras.models.load_model(self.checkpoint_dir+'/model_discriminator.h5')
+				except:
+					print("H5 file loading also failed. Please Check the LOG_FOLDER and RUN_ID flags")
 			print("Model restored...")
 			print("Starting at Iteration - "+str(self.total_count.numpy()))
 			print("Starting at Epoch - "+str(int((self.total_count.numpy() * self.batch_size_big) / (self.train_data.shape[0])) + 1))
@@ -430,10 +426,16 @@ class SGAN_cGAN(GAN_ACGAN):
 		self.checkpoint_prefix = os.path.join(self.checkpoint_dir, "ckpt")
 
 		if self.resume:
-			# self.total_count = int(temp.split('-')[-1])
-			self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
-			self.generator = tf.keras.models.load_model(self.checkpoint_dir+'/model_generator.h5')
-			self.discriminator = tf.keras.models.load_model(self.checkpoint_dir+'/model_discriminator.h5')
+			try:
+				self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
+			except:
+				print("Checkpoint loading Failed. It could be a model mismatch. H5 files will be loaded instead")
+				try:
+					self.generator = tf.keras.models.load_model(self.checkpoint_dir+'/model_generator.h5')
+					self.discriminator = tf.keras.models.load_model(self.checkpoint_dir+'/model_discriminator.h5')
+				except:
+					print("H5 file loading also failed. Please Check the LOG_FOLDER and RUN_ID flags")
+
 			print("Model restored...")
 			print("Starting at Iteration - "+str(self.total_count.numpy()))
 			print("Starting at Epoch - "+str(int((self.total_count.numpy() * self.batch_size_big) / (self.train_data.shape[0])) + 1))
@@ -591,8 +593,6 @@ class SGAN_cGAN(GAN_ACGAN):
 class SGAN_RumiGAN(GAN_RumiGAN):
 
 	def __init__(self,FLAGS_dict):
-		# self.alphap = FLAGS_dict['alphap']
-		# self.alphan = FLAGS_dict['alphan']
 		GAN_RumiGAN.__init__(self,FLAGS_dict)
 
 	def main_func(self):
@@ -629,10 +629,16 @@ class SGAN_RumiGAN(GAN_RumiGAN):
 		self.checkpoint_prefix = os.path.join(self.checkpoint_dir, "ckpt")
 
 		if self.resume:
-			# self.total_count = int(temp.split('-')[-1])
-			self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
-			self.generator = tf.keras.models.load_model(self.checkpoint_dir+'/model_generator.h5')
-			self.discriminator = tf.keras.models.load_model(self.checkpoint_dir+'/model_discriminator.h5')
+			try:
+				self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
+			except:
+				print("Checkpoint loading Failed. It could be a model mismatch. H5 files will be loaded instead")
+				try:
+					self.generator = tf.keras.models.load_model(self.checkpoint_dir+'/model_generator.h5')
+					self.discriminator = tf.keras.models.load_model(self.checkpoint_dir+'/model_discriminator.h5')
+				except:
+					print("H5 file loading also failed. Please Check the LOG_FOLDER and RUN_ID flags")
+
 			print("Model restored...")
 			print("Starting at Iteration - "+str(self.total_count.numpy()))
 			print("Starting at Epoch - "+str(int((self.total_count.numpy() * self.batch_size_big) / (max(self.train_data_pos.shape[0],self.train_data_neg.shape[0]))) + 1))
@@ -663,7 +669,6 @@ class SGAN_RumiGAN(GAN_RumiGAN):
 					bar.postfix[2] = f'{self.G_loss.numpy():2.4e}'
 					bar.update(self.batch_size.numpy())
 				if (batch_count.numpy() % self.print_step.numpy()) == 0 or self.total_count <= 2:
-					# tf.print ('Epoch {:>3d} batch {:>3d} in {:>2.4f} sec; D_loss - {:>2.4f}; G_loss - {:>2.4f}'.format(epoch,batch_count.numpy(),train_time,self.D_loss.numpy(),self.G_loss.numpy()))
 					if self.res_flag:
 						self.res_file.write("Epoch {:>3d} Batch {:>3d} in {:>2.4f} sec; D_loss - {:>2.4f}; G_loss - {:>2.4f} \n".format(epoch,batch_count.numpy(),train_time,self.D_loss.numpy(),self.G_loss.numpy()))
 
@@ -742,15 +747,5 @@ class SGAN_RumiGAN(GAN_RumiGAN):
 
 		self.G_loss = cross_entropy(tf.ones_like(self.fake_output), self.fake_output)
 
-		# G_fake_loss = -cross_entropy(tf.ones_like(self.fake_output), self.fake_output)
-		# G_real_neg_loss = mse(tf.ones_like(self.real_neg_output), self.real_neg_output)
-		# self.G_loss = G_fake_loss #+ G_real_neg_loss + D_real_pos_loss
-
-
-		# D_real_loss = cross_entropy(tf.ones_like(self.real_output), self.real_output)
-		# D_fake_loss = cross_entropy(tf.zeros_like(self.fake_output), self.fake_output)
-		# self.D_loss = D_real_loss + D_fake_loss
-
-		# self.G_loss = cross_entropy(tf.ones_like(self.fake_output), self.fake_output)
 
 

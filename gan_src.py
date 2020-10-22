@@ -3,21 +3,17 @@ import os, sys, time, argparse
 from datetime import date
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import layers
 import matplotlib.pyplot as plt
 import math
 from absl import app
 from absl import flags
 import json
 import glob
-from sklearn.manifold import TSNE
 from tqdm.autonotebook import tqdm
 import shutil
 
 import tensorflow_probability as tfp
 tfd = tfp.distributions
-# import tensorflow_gan as tfgan
-# import prd_score as prd
 
 ##FOR FID
 from numpy import cov
@@ -25,16 +21,6 @@ from numpy import trace
 from scipy.linalg import sqrtm
 import scipy as sp
 from numpy import iscomplexobj
-# from gan_data import *
-# from arch_mnist import *
-# from arch_u1 import *
-
-
-####NOTE : 15thJune2020 - Cleaned up KLD calculator. sorted folder creation ops here. Need to remove them elsewheres. Need to clean print KLD,FID function.
-
-# FLAGS = flags.FLAGS
-# FLAGS(sys.argv)
-# # tf.keras.backend.set_floatx('float64')
 
 
 from arch import *
@@ -81,12 +67,9 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2, 
 			self.total_count = tf.Variable(0,dtype='int64')
 
 
-		eval('ARCH_'+FLAGS.data+'.__init__(self)')
+		eval('ARCH_'+self.data+'.__init__(self)')
 
-		if self.data in ['g1', 'g2', 'gmm8', 'gmm2']:
-			self.num_to_print = 1000
-		else:
-			self.num_to_print = 10
+		self.num_to_print = 10
 
 		if self.mode in ['test','metrics']:
 			self.num_test_images = 20
@@ -215,10 +198,8 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2, 
 	def generate_and_save_batch(self,epoch):
 		noise = tf.random.normal([self.num_to_print*self.num_to_print, self.noise_dims], mean = self.noise_mean, stddev = self.noise_stddev)
 		path = self.impath + str(self.total_count.numpy())
-		#### AAE are Autoencoders, not generative models.
-		if self.topic == 'AAE':
-			predictions = self.Decoder(self.Encoder(self.reals[0:self.num_to_print*self.num_to_print], training = False), training = False)
-		elif self.topic in ['cGAN', 'ACGAN']:
+
+		if self.topic in ['cGAN', 'ACGAN']:
 			class_vec = []
 			for i in range(self.num_classes):
 				class_vec.append(i*np.ones(int((self.num_to_print**2)/self.num_classes)))
@@ -228,13 +209,8 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2, 
 			predictions = self.generator([noise,class_final], training=False)
 		else:
 			predictions = self.generator(noise, training=False)
-			if self.loss == 'FS':
-				if self.latent_kind in ['AE','AAE']:
-					predictions = self.Decoder(predictions, training= False)
-		# if self.mode == 'test':
-		# 	self.fakes = predictions
-		# if not self.paper:
-		if self.topic == 'AAE' or self.data != 'celeba':
+
+		if self.data != 'celeba':
 			predictions = (predictions + 1.0)/2.0
 		eval(self.show_result_func)
 
@@ -291,47 +267,11 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2, 
 		self.discriminator.save(self.checkpoint_dir + '/model_discriminator.h5', overwrite = True)
 
 	def setup_metrics(self):
-		self.KLD_flag = 0
 		self.FID_flag = 0
 		self.PR_flag = 0
-		self.lambda_flag = 0
-		self.recon_flag = 0
-		self.GradGrid_flag = 0
 		self.class_prob_flag = 0
 		self.metric_counter_vec = []
 
-
-		if self.loss == 'FS' and self.mode != 'metrics':
-			self.lambda_flag = 1
-			self.lambda_vec = []
-
-		if 'KLD' in self.metrics:				
-			self.KLD_flag = 1
-			self.KLD_vec = []
-
-			if self.data in ['g1', 'g2', 'gmm2', 'gmm8', 'gN', 'u1']:
-				self.KLD_steps = 10
-				if self.data == 'gN':
-					self.KLD_steps = 50
-				if self.data in ['gmm2', 'gmm8', 'u1']:#, 'gN']:
-					self.KLD_func = self.KLD_sample_estimate
-				else:
-					self.KLD_func = self.KLD_Gaussian
-			else:
-				self.KLD_flag = 1
-				self.KLD_steps = 100
-				if self.loss == 'FS' and self.topic != 'AAE':
-					if self.distribution == 'gaussian' or self.data in ['g1','g2']:
-						self.KLD_func = self.KLD_Gaussian
-					else:
-						self.KLD_func = self.KLD_sample_estimate
-				if self.topic == 'AAE':
-					if 'gaussian' in self.noise_kind:
-						self.KLD_func = self.KLD_Gaussian
-					else:
-						self.KLD_func = self.KLD_sample_estimate
-				print('KLD is not an accurate metric on this datatype')
-				
 
 		if 'FID' in self.metrics:
 			self.FID_flag = 1
@@ -342,43 +282,24 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2, 
 			if self.data in ['mnist']:
 				self.FID_steps = 500
 				if self.mode == 'metrics':
-					self.FID_num_samples = 50000
+					self.FID_num_samples = 10000
 				else:
 					self.FID_num_samples = 5000#15000
 			elif self.data in ['cifar10']:
 				self.FID_steps = 500
 				if self.mode == 'metrics':
-					self.FID_num_samples = 50000
+					self.FID_num_samples = 10000
 				else:
 					self.FID_num_samples = 5000
 			elif self.data in ['celeba']:
 				self.FID_steps = 2500
 				if self.mode == 'metrics':
-					self.FID_num_samples = 50000
+					self.FID_num_samples = 10000
 				else:
 					self.FID_num_samples = 5000
-			elif self.data in ['gN']:
-				self.FID_steps = 100
 			else:
 				self.FID_flag = 0
 				print('FID cannot be evaluated on this dataset')
-
-		if 'recon' in self.metrics:
-			self.recon_flag = 1
-			self.recon_vec = []
-			self.FID_vec_new = []
-
-			if self.data in ['mnist']:
-				self.recon_steps = 500
-			elif self.data in ['cifar10']:
-				self.recon_steps = 1500
-			elif self.data in ['celeba']:
-				self.recon_steps = 1500
-			elif self.data in ['gN']:
-				self.recon_steps = 100
-			else:
-				self.recon_flag = 0
-				print('Reconstruction cannot be evaluated on this dataset')
 
 
 		if 'PR' in self.metrics:
@@ -387,12 +308,6 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2, 
 			self.PR_vec = []
 			self.PR_steps = self.FID_steps
 
-		if 'GradGrid' in self.metrics:
-			if self.data in ['g2', 'gmm8']:
-				self.GradGrid_flag = 1
-				self.GradGrid_steps = 100
-			else:
-				print("Cannot plot Gradient grid. Not a 2D dataset")
 
 		if 'ClassProbs' in self.metrics:
 			self.class_prob_vec = []
@@ -431,33 +346,6 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2, 
 				self.print_PR()
 
 
-
-		if self.KLD_flag and ((self.total_count.numpy()%self.KLD_steps == 0 or self.total_count.numpy() == 1)  or self.mode == 'metrics'):
-			update_flag = 1
-			self.update_KLD()
-			if self.mode != 'metrics':
-				np.save(self.metricpath+'KLD.npy',np.array(self.KLD_vec))
-				self.print_KLD()
-
-		if self.recon_flag and ((self.total_count.numpy()%self.recon_steps == 0 or self.total_count.numpy() == 1)  or self.mode == 'metrics'):
-			update_flag = 1
-			self.eval_recon()
-			if self.mode != 'metrics':
-				np.save(self.metricpath+'recon.npy',np.array(self.recon_vec))
-				self.print_recon()
-
-
-		if self.lambda_flag and (self.loss == 'FS' or self.mode == 'metrics'):
-			update_flag = 1
-			self.update_Lambda()
-			if self.mode != 'metrics':
-				np.save(self.metricpath+'Lambda.npy',np.array(self.lambda_vec))
-				self.print_Lambda()
-
-		if self.GradGrid_flag and ((self.total_count.numpy()%self.GradGrid_steps == 0 or self.total_count.numpy() == 1) or self.mode == 'metrics'):
-			update_flag = 1
-			self.print_GradGrid()
-
 		if self.class_prob_flag and (self.total_count.numpy()%self.class_prob_steps == 0 or self.mode == 'metrics'):
 			update_flag = 1
 			self.class_prob_metric()
@@ -468,28 +356,6 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2, 
 		if self.res_flag and update_flag:
 			self.res_file.write("Metrics avaluated at Iteration " + str(self.total_count.numpy()) + '\n')
 
-
-	# def update_FLOPS(self):
-
-	# 	def get_flops(model_h5_path):
-	# 		session = tf.compat.v1.Session()
-	# 		graph = tf.compat.v1.get_default_graph()
-					
-
-	# 		with graph.as_default():
-	# 			with session.as_default():
-	# 				model = tf.keras.models.load_model(model_h5_path)
-
-	# 				run_meta = tf.compat.v1.RunMetadata()
-	# 				opts = tf.compat.v1.profiler.ProfileOptionBuilder.float_operation()
-				
-	# 				# We use the Keras session graph in the call to the profiler.
-	# 				flops = tf.compat.v1.profiler.profile(graph=graph,
-	# 													  run_meta=run_meta, cmd='op', options=opts)
-				
-	# 				return flops.total_float_ops
-
-	# 	return 
 
 	def update_PR(self):
 		self.PR = compute_prd_from_embedding(self.act2, self.act1)
@@ -702,13 +568,6 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2, 
 				"text.usetex": True,     # use inline math for ticks
 				"pgf.rcfonts": False,    # don't setup fonts from rc parameters
 			})
-		# if self.topic == 'ELeGANt':
-		# 	if self.loss == 'FS' and self.latent_kind == 'AE':
-		# 		basis = np.expand_dims(np.array(np.arange(0,self.total_count.numpy() - self.AE_steps,self.FID_steps)),axis=1)
-		# 	else:
-		# 		basis = np.expand_dims(np.array(np.arange(0,self.total_count.numpy(),self.FID_steps)),axis=1)
-		# else:
-		# 	basis  = np.expand_dims(np.array(np.arange(0,len(self.FID_vec),self.FID_steps)),axis=1)
 
 		vals = list(np.array(self.FID_vec)[:,0])
 		locs = list(np.array(self.FID_vec)[:,1])
@@ -722,170 +581,6 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2, 
 			ax1.get_yaxis().set_visible(True)
 			ax1.plot(locs,vals, c='r',label = 'FID vs. Iterations')
 			ax1.legend(loc = 'upper right')
-			pdf.savefig(fig1)
-			plt.close(fig1)
-
-		# vals = list(np.array(self.FID_vec_new)[:,0])
-		# locs = list(np.array(self.FID_vec_new)[:,1])
-
-		# with PdfPages(path+'FID_plot_new.pdf') as pdf:
-
-		# 	fig1 = plt.figure(figsize=(3.5, 3.5))
-		# 	ax1 = fig1.add_subplot(111)
-		# 	ax1.cla()
-		# 	ax1.get_xaxis().set_visible(True)
-		# 	ax1.get_yaxis().set_visible(True)
-		# 	ax1.plot(locs,vals, c='r',label = 'FID vs. Iterations')
-		# 	ax1.legend(loc = 'upper right')
-		# 	pdf.savefig(fig1)
-		# 	plt.close(fig1)
-
-
-
-
-	# def update_GradGrid(self):
-
-
-
-	def print_GradGrid(self):
-
-		path = self.metricpath + str(self.total_count.numpy()) + '_'
-
-		if self.colab:
-			from matplotlib.backends.backend_pdf import PdfPages
-			plt.rc('text', usetex=False)
-		else:
-			from matplotlib.backends.backend_pgf import PdfPages
-			plt.rcParams.update({
-				"pgf.texsystem": "pdflatex",
-				"font.family": "helvetica",  # use serif/main font for text elements
-				"font.size": 12,
-				"text.usetex": True,     # use inline math for ticks
-				"pgf.rcfonts": False,    # don't setup fonts from rc parameters
-			})
-
-		
-		from itertools import product as cart_prod
-
-		x = np.arange(self.MIN,self.MAX+0.1,0.1)
-		y = np.arange(self.MIN,self.MAX+0.1,0.1)
-
-		# X, Y = np.meshgrid(x, y)
-		prod = np.array([p for p in cart_prod(x,repeat = 2)])
-		# print(x,prod)
-
-		X = prod[:,0]
-		Y = prod[:,1]
-
-		# print(prod,X,Y)
-		# print(XXX)
-
-		with tf.GradientTape() as disc_tape:
-			prod = tf.cast(prod, dtype = 'float32')
-			disc_tape.watch(prod)
-			d_vals = self.discriminator(prod,training = False)
-		grad_vals = disc_tape.gradient(d_vals, [prod])[0]
-
-		# print(d_vals, prod)
-		### Theres a swap. hence the traspose and the 1,0 assignment of dx and dy
-		try:
-			# print(d_vals[0])
-			
-			if False and ((min(d_vals[0]) <= -2) or (max(d_vals[0]) >= 2)):
-				### IF NORMALIZATION IS NEEDED
-				d_vals_sub = d_vals[0] - min(d_vals[0])
-				d_vals_norm = d_vals_sub/max(d_vals_sub)
-				d_vals_norm -= 0.5
-				d_vals_norm *= 3
-				# d_vals_new = np.expand_dims(np.array(d_vals_norm),axis = 1)
-				d_vals_new = np.reshape(d_vals_norm,(x.shape[0],y.shape[0])).transpose()
-				# d_vals_norm = np.expand_dims(np.array(d_vals_sub/max(d_vals_sub)),axis = 1)
-				# d_vals_new = np.subtract(d_vals_norm,0.5)
-				# d_vals_new = np.multiply(d_vals_new,3.)
-				# print(d_vals_new)
-			else:
-				### IF NORMALIZATION IS NOT NEEDED
-				d_vals_norm = d_vals[0]
-				d_vals_new = np.reshape(d_vals_norm,(x.shape[0],y.shape[0])).transpose()
-		except:
-			d_vals_new = np.reshape(d_vals,(x.shape[0],y.shape[0])).transpose()
-		# print(d_vals_new)
-		dx = grad_vals[:,1]
-		dy = grad_vals[:,0]
-		# print(XXX)
-		n = -1
-		color_array = np.sqrt(((dx-n)/2)**2 + ((dy-n)/2)**2)
-
-		with PdfPages(path+'GradGrid_plot.pdf') as pdf:
-
-			fig1 = plt.figure(figsize=(3.5, 3.5))
-			ax1 = fig1.add_subplot(111)
-			ax1.cla()
-			ax1.get_xaxis().set_visible(True)
-			ax1.get_yaxis().set_visible(True)
-			ax1.set_xlim([self.MIN,self.MAX])
-			ax1.set_ylim(bottom=self.MIN,top=self.MAX)
-			ax1.quiver(X,Y,dx,dy,color_array)
-			ax1.scatter(self.reals[:1000,0], self.reals[:1000,1], c='r', linewidth = 1, label='Real Data', marker = '.', alpha = 0.1)
-			ax1.scatter(self.fakes[:1000,0], self.fakes[:1000,1], c='g', linewidth = 1, label='Fake Data', marker = '.', alpha = 0.1)
-			pdf.savefig(fig1)
-			plt.close(fig1)
-
-		with PdfPages(path+'Contourf_plot.pdf') as pdf:
-
-			fig1 = plt.figure(figsize=(3.5, 3.5))
-			ax1 = fig1.add_subplot(111)
-			ax1.cla()
-			ax1.get_xaxis().set_visible(False)
-			ax1.get_yaxis().set_visible(False)
-			ax1.set_xlim([self.MIN,self.MAX])
-			ax1.set_ylim([self.MIN,self.MAX])
-			cs = ax1.contourf(x,y,d_vals_new,alpha = 0.5, levels = list(np.arange(-1.5,1.5,0.1)), extend = 'both' )
-			ax1.scatter(self.reals[:,0], self.reals[:,1], c='r', linewidth = 1, marker = '.', alpha = 0.75)
-			ax1.scatter(self.fakes[:,0], self.fakes[:,1], c='g', linewidth = 1, marker = '.', alpha = 0.75)
-			# cbar = fig1.colorbar(cs, shrink=1., orientation = 'horizontal')
-			# Can be used with figure size (2,10) to generate a colorbar with diff colors as plotted
-			# Good for a table wit \multicol{5}
-			# cbar = fig1.colorbar(cs, aspect = 40, shrink=1., ticks = [0, 1.0], orientation = 'horizontal')
-			# cbar.ax.set_xticklabels(['Min', 'Max'])
-			# # cbar.set_ticks_position(['bottom', 'top'])
-			pdf.savefig(fig1)
-			plt.close(fig1)
-
-		with PdfPages(path+'Contourf_plot_cBAr.pdf') as pdf:
-
-			fig1 = plt.figure(figsize=(8, 8))
-			ax1 = fig1.add_subplot(111)
-			ax1.cla()
-			ax1.get_xaxis().set_visible(False)
-			ax1.get_yaxis().set_visible(False)
-			ax1.set_xlim([self.MIN,self.MAX])
-			ax1.set_ylim([self.MIN,self.MAX])
-			cs = ax1.contourf(x,y,d_vals_new,alpha = 0.5, levels = list(np.arange(-1.5,1.6,0.1)), extend = 'both' )
-			ax1.scatter(self.reals[:,0], self.reals[:,1], c='r', linewidth = 1, marker = '.', alpha = 0.75)
-			ax1.scatter(self.fakes[:,0], self.fakes[:,1], c='g', linewidth = 1, marker = '.', alpha = 0.75)
-			# cbar = fig1.colorbar(cs, shrink=1., orientation = 'horizontal')
-			# Can be used with figure size (10,2) to generate a colorbar with diff colors as plotted
-			# Good for a table wit \multicol{5}
-			cbar = fig1.colorbar(cs, aspect = 40, shrink=1., ticks = [-1.5, -1, -0.5, 0, 0.5, 1, 1.5], orientation = 'horizontal')
-			cbar.ax.set_xticklabels(['$-1.5$', '$-1$', '$-0.5$', '$0$', '$0.5$', '$1$', '$1.5$'])
-			# # cbar.set_ticks_position(['bottom', 'top'])
-			pdf.savefig(fig1)
-			plt.close(fig1)
-
-		with PdfPages(path+'Contour_plot.pdf') as pdf:
-
-			fig1 = plt.figure(figsize=(3.5, 3.5))
-			ax1 = fig1.add_subplot(111)
-			ax1.cla()
-			ax1.get_xaxis().set_visible(False)
-			ax1.get_yaxis().set_visible(False)
-			ax1.set_xlim([self.MIN,self.MAX])
-			ax1.set_ylim([self.MIN,self.MAX])
-			ax1.contour(x,y,d_vals_new,10,linewidths = 0.5,alpha = 0.4 )
-			ax1.scatter(self.reals[:,0], self.reals[:,1], c='r', linewidth = 1, marker = '.', alpha = 0.75)
-			ax1.scatter(self.fakes[:,0], self.fakes[:,1], c='g', linewidth = 1, marker = '.', alpha = 0.75)
-			# cbar = fig1.colorbar(cs, shrink=1., orientation = 'horizontal')
 			pdf.savefig(fig1)
 			plt.close(fig1)
 

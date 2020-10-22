@@ -5,26 +5,22 @@ Dummy File Generator
 
 This is the Code submission accompanying the NeurIPS 2020 paper, titled "Teaching a GAN What Not to Learn."
 
-This code contained the implementations of baseline SGAN, LSGAN, ACGAN, TACGAN, and CGAN-PD employed in the paper to generate the desired results. 
+This code contained the implementations of baseline SGAN, LSGAN, ACGAN, TACGAN, and CGAN-PD employed in the paper to generate the desired results. All code in written in TensorFlow2.x  In its current state, the code can be used to train new models. Pre-trained models of will be made available shortly.
 
-![Dummy File Generator](screenshot.png?raw=true)
+![RumiGANs](Images/RumiGANs.png?raw=true)
 
 
 ### Requirements
 
-The source code is a [AutoIt-Script](http://www.autoitscript.com). You need the compiler and editor to modify and build the program. 
+The source code is a <Under Construction> 
 
             
 ### Build
-Run the `main.au3` file.
-
-
-see: [Compiling AutoIt Scripts with Aut2Exe](http://www.autoitscript.com/autoit3/docs/intro/compiler.htm)
-
+* <Under Construction>
 
 ### Links
 
-* [AutoIt Homepage](http://www.autoitscript.com)
+* [This Takes You to Google](http://www.google.com)
 
 
 
@@ -36,3 +32,6 @@ Please see the `LICENSE.txt` file for full informations.
 ----------------------------------
 
 Siddarth Asokan
+Robert Bosch Centre for Cyber Physical Systems
+Indian Institute of Science, Bangalore
+India

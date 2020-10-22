@@ -156,7 +156,6 @@ if __name__ == '__main__':
 	##
 	##
 	### -----------------
-	### Have to add CycleGAN for future work. Potentially a cGAN to separate out ACGAN style stuff from cGAN. Currently, no plans.
 
 	gan_call = FLAGS.gan + '_' + FLAGS.topic + '(FLAGS_dict)'
 
@@ -176,9 +175,6 @@ if __name__ == '__main__':
 
 	if gan.mode == 'test':
 		gan.test()
-
-	# if gan.mode == 'fid':
-	# 	gan.update_FID()
 
 	if gan.mode == 'metrics':
 		gan.eval_metrics()

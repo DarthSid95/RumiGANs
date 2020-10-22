@@ -3,7 +3,6 @@ import os, sys, time, argparse
 from datetime import date
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import layers
 import matplotlib.pyplot as plt
 import math
 from absl import app
@@ -17,8 +16,6 @@ import tensorflow_probability as tfp
 tfd = tfp.distributions
 from matplotlib.backends.backend_pgf import PdfPages
 
-# FLAGS(sys.argv)
-# tf.keras.backend.set_floatx('float64')
 
 '''
 GAN_topic is the Overarching class file, where corresponding parents are instantialized, along with setting up the calling functions for these and files and folders for resutls, etc. data reading is also done from here. Sometimes display functions, architectures, etc may be modified here if needed (overloading parent classes)
@@ -31,12 +28,9 @@ class GAN_Base(GAN_SRC, GAN_DATA_Base):
 
 	def __init__(self,FLAGS_dict):
 		''' Set up the GAN_SRC class - defines all fundamental ops and metric functions'''
-
 		GAN_SRC.__init__(self,FLAGS_dict)
-
 		''' Set up the GAN_DATA class'''
 		GAN_DATA_Base.__init__(self)
-		# eval('GAN_DATA_'+FLAGS.topic+'.__init__(self,data)')
 
 
 	def initial_setup(self):
@@ -65,7 +59,6 @@ class GAN_Base(GAN_SRC, GAN_DATA_Base):
 		self.save_step = tf.constant(max(int(self.num_batches/2),1),dtype='int64')
 
 		self.train_dataset = eval(self.dataset_func)
-
 		self.train_dataset_size = self.train_data.shape[0]
 
 

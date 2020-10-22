@@ -62,8 +62,12 @@ class LSGAN_Base(GAN_Base):
 			try:
 				self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
 			except:
-				self.generator = tf.keras.models.load_model(self.checkpoint_dir+'/model_generator.h5')
-				self.discriminator = tf.keras.models.load_model(self.checkpoint_dir+'/model_discriminator.h5')
+				print("Checkpoint loading Failed. It could be a model mismatch. H5 files will be loaded instead")
+				try:
+					self.generator = tf.keras.models.load_model(self.checkpoint_dir+'/model_generator.h5')
+					self.discriminator = tf.keras.models.load_model(self.checkpoint_dir+'/model_discriminator.h5')
+				except:
+					print("H5 file loading also failed. Please Check the LOG_FOLDER and RUN_ID flags")
 
 			print("Model restored...")
 			print("Starting at Iteration - "+str(self.total_count.numpy()))
@@ -224,10 +228,15 @@ class LSGAN_cGAN(GAN_ACGAN):
 		self.checkpoint_prefix = os.path.join(self.checkpoint_dir, "ckpt")
 
 		if self.resume:
-			# self.total_count = int(temp.split('-')[-1])
-			self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
-			self.generator = tf.keras.models.load_model(self.checkpoint_dir+'/model_generator.h5')
-			self.discriminator = tf.keras.models.load_model(self.checkpoint_dir+'/model_discriminator.h5')
+			try:
+				self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
+			except:
+				print("Checkpoint loading Failed. It could be a model mismatch. H5 files will be loaded instead")
+				try:
+					self.generator = tf.keras.models.load_model(self.checkpoint_dir+'/model_generator.h5')
+					self.discriminator = tf.keras.models.load_model(self.checkpoint_dir+'/model_discriminator.h5')
+				except:
+					print("H5 file loading also failed. Please Check the LOG_FOLDER and RUN_ID flags")
 			print("Model restored...")
 			print("Starting at Iteration - "+str(self.total_count.numpy()))
 			print("Starting at Epoch - "+str(int((self.total_count.numpy() * self.batch_size_big) / (self.train_data.shape[0])) + 1))
@@ -371,15 +380,8 @@ class LSGAN_RumiGAN(GAN_RumiGAN):
 
 	def __init__(self,FLAGS_dict):
 
-		# self.lable_a = FLAGS_dict['lable_a']
-		# self.lable_bp = FLAGS_dict['lable_bp']
-		# self.lable_bn = FLAGS_dict['lable_bn']
-		# self.lable_c = FLAGS_dict['lable_c']
-		# self.alphap = FLAGS_dict['alphap']
-		# self.alphan = FLAGS_dict['alphan']
 		GAN_RumiGAN.__init__(self,FLAGS_dict)
 
-	
 	def main_func(self):
 		with tf.device(self.device):
 			self.total_count = tf.Variable(0,dtype='int64')
@@ -417,10 +419,16 @@ class LSGAN_RumiGAN(GAN_RumiGAN):
 		self.checkpoint_prefix = os.path.join(self.checkpoint_dir, "ckpt")
 
 		if self.resume:
-			# self.total_count = int(temp.split('-')[-1])
-			self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
-			# self.generator = tf.keras.models.load_model(self.checkpoint_dir+'/model_generator.h5')
-			# self.discriminator = tf.keras.models.load_model(self.checkpoint_dir+'/model_discriminator.h5')
+			try:
+				self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
+			except:
+				print("Checkpoint loading Failed. It could be a model mismatch. H5 files will be loaded instead")
+				try:
+					self.generator = tf.keras.models.load_model(self.checkpoint_dir+'/model_generator.h5')
+					self.discriminator = tf.keras.models.load_model(self.checkpoint_dir+'/model_discriminator.h5')
+				except:
+					print("H5 file loading also failed. Please Check the LOG_FOLDER and RUN_ID flags")
+
 			print("Model restored...")
 			print("Starting at Iteration - "+str(self.total_count.numpy()))
 			print("Starting at Epoch - "+str(int((self.total_count.numpy() * self.batch_size_big) / (max(self.train_data_pos.shape[0],self.train_data_neg.shape[0]))) + 1))
