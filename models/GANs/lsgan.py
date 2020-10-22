@@ -59,7 +59,6 @@ class LSGAN_Base(GAN_Base):
 		self.checkpoint_prefix = os.path.join(self.checkpoint_dir, "ckpt")
 
 		if self.resume:
-			# self.total_count = int(temp.split('-')[-1])
 			try:
 				self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
 			except:
@@ -68,51 +67,9 @@ class LSGAN_Base(GAN_Base):
 
 			print("Model restored...")
 			print("Starting at Iteration - "+str(self.total_count.numpy()))
-			# print("Starting at Epoch - "+str(int((self.total_count.numpy() * self.batch_size_big) / (self.train_data.shape[0])) + 1))
 
 
-	def train(self):    
-		start = int((self.total_count.numpy() * self.batch_size_big) / (self.train_data.shape[0])) + 1 
-		for epoch in range(start,self.num_epochs):
-			if self.pbar_flag:
-				bar = self.pbar(epoch) 
-			start = time.time()
-			batch_count = tf.Variable(0,dtype='int64')
-			start_1 = 0
-			for image_batch in self.train_dataset:
 
-				# print(image_batch[0])
-				
-				# if self.total_count.numpy() == 0 and batch_count.numpy() == 1:
-				# 	print(image_batch,an)
-				# 	eval('self.show_result_'+self.data+'(images = image_batch[0:25], num_epoch=epoch, show = False, save = True, path = self.impath)')
-				self.total_count.assign_add(1)
-				batch_count.assign_add(self.Dloop)
-				start_1 = time.time()
-				with tf.device(self.device):
-					self.train_step(image_batch)
-					self.eval_metrics()
-				train_time = time.time()-start_1
-
-				if self.pbar_flag:
-					bar.postfix[0] = f'{batch_count.numpy():6.0f}'
-					bar.postfix[1] = f'{self.D_loss.numpy():2.4e}'
-					bar.postfix[2] = f'{self.G_loss.numpy():2.4e}'
-					bar.update(self.batch_size.numpy())
-				if (batch_count.numpy() % self.print_step.numpy()) == 0 or self.total_count.numpy() <= 20:
-					if self.res_flag:
-						self.res_file.write("Epoch {:>3d} Batch {:>3d} in {:>2.4f} sec; D_loss - {:>2.4f}; G_loss - {:>2.4f} \n".format(epoch,batch_count.numpy(),train_time,self.D_loss.numpy(),self.G_loss.numpy()))
-
-				self.print_batch_outputs(epoch)
-
-
-				# Save the model every SAVE_ITERS iterations
-				if (self.total_count.numpy() % self.save_step.numpy()) == 0:
-					if self.save_all:
-						self.checkpoint.save(file_prefix = self.checkpoint_prefix)
-					else:
-						self.manager.save()
-					# tf.print("Model and Images saved")
 
 				
 						
@@ -124,10 +81,6 @@ class LSGAN_Base(GAN_Base):
 			self.discriminator.save(self.checkpoint_dir + '/model_discriminator.h5', overwrite = True)
 
 
-		# if self.paper == 1:
-		# 	self.printFID()
-
-			# writer.flush
 
 	def print_batch_outputs(self,epoch):
 

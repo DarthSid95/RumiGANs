@@ -52,7 +52,7 @@ GAN_ARCH Consists of the common parts of GAN architectures, speficially, the cal
 '''***********************************************************************************
 ********** GAN Arch ******************************************************************
 ***********************************************************************************'''
-class GAN_ARCH( eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2, ARCH_gmm8, ARCH_comma):  eval('ARCH_'+FLAGS.data),
+class GAN_ARCH(eval('ARCH_'+FLAGS.data)): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2, ARCH_gmm8, ARCH_comma):  eval('ARCH_'+FLAGS.data),
 
 	def __init__(self,FLAGS_dict):
 		''' Defines anything common to te diofferent GAN approaches. Architectures of Gen and Disc, all flags,'''

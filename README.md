@@ -3,7 +3,9 @@ Dummy File Generator
 
 ### Introduction
 
-Small tool to generate dummy files with a specified size.
+This is the Code submission accompanying the NeurIPS 2020 paper, titled "Teaching a GAN What Not to Learn."
+
+This code contained the implementations of baseline SGAN, LSGAN, ACGAN, TACGAN, and CGAN-PD employed in the paper to generate the desired results. 
 
 ![Dummy File Generator](screenshot.png?raw=true)
 
@@ -33,5 +35,4 @@ Please see the `LICENSE.txt` file for full informations.
 
 ----------------------------------
 
-Markus Eschenbach  
-http://www.blogging-it.com
+Siddarth Asokan
