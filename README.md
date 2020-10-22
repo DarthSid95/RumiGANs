@@ -1,4 +1,4 @@
-Dummy File Generator
+Teaching A GAN What Not to Learn
 ====================
 
 ### Introduction
@@ -31,7 +31,7 @@ Please see the `LICENSE.txt` file for full informations.
 
 ----------------------------------
 
-Siddarth Asokan
+Siddarth Asokan\\
 Robert Bosch Centre for Cyber Physical Systems
 Indian Institute of Science, Bangalore
 India
