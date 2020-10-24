@@ -10,13 +10,15 @@ This code contained the implementations of baseline SGAN, LSGAN, ACGAN, TACGAN, 
 ![RumiGANs](Images/RumiGANs.png?raw=true)
 
 
+### The source code is "Under Construction" 
+
 ### Requirements
 
-The source code is "Under Construction" 
+The requirements are "Under Construction" 
 
             
 ### Build
-* "Under Construction"
+* The Build is "Under Construction"
 
 ### Links
 
