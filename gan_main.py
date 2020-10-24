@@ -124,7 +124,7 @@ if __name__ == '__main__':
 	tf.get_logger().setLevel('ERROR')
 	# tf.debugging.set_log_device_placement(True)
 	# if FLAGS.colab and FLAGS.data == 'celeba':
-	os.environ["TCMALLOC_LARGE_ALLOC_REPORT_THRESHOLD"] = "500G"
+	# os.environ["TCMALLOC_LARGE_ALLOC_REPORT_THRESHOLD"] = "500G"
 	if FLAGS.colab:
 		import warnings
 		warnings.filterwarnings("ignore")
@@ -170,8 +170,8 @@ if __name__ == '__main__':
 		gan.train()
 		gan.test()
 
-	if gan.mode == 'save_model':
-		gan.model_saver()
+	if gan.mode == 'h5_from_checkpoint':
+		gan.h5_from_checkpoint()
 
 	if gan.mode == 'test':
 		gan.test()
