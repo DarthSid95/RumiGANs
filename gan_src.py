@@ -11,6 +11,7 @@ import json
 import glob
 from tqdm.autonotebook import tqdm
 import shutil
+import warnings
 
 import tensorflow_probability as tfp
 tfd = tfp.distributions
@@ -24,7 +25,6 @@ from numpy import iscomplexobj
 
 
 from arch import *
-from ops import *
 from gan_metrics import *
 
 '''
@@ -33,19 +33,24 @@ GAN_SRC Consists of the common parts of GAN architectures, speficially, the call
 '''***********************************************************************************
 ********** GAN Source Class -- All the basics and metrics ****************************
 ***********************************************************************************'''
-class GAN_SRC(eval('ARCH_'+FLAGS.data), GAN_Metrics): #mnist, ARCH_celeba, ARCG_g1, ARCH_g2, ARCH_gmm8, ARCH_comma):  eval('ARCH_'+FLAGS.data),
+class GAN_SRC(eval('ARCH_'+FLAGS.data), GAN_Metrics):
 
 	def __init__(self,FLAGS_dict):
 		''' Defines anything common to te diofferent GAN approaches. Architectures of Gen and Disc, all flags,'''
 		for name,val in FLAGS_dict.items():
 			exec('self.'+name+' = val')
 
+		if self.colab:
+			if self.pbar_flag:
+				warnings.warn("Repeated updation of the tqdm progress bar on Colab can cause OOM on Colab, resulting in pkill, or OOM on the local system, causing the browser to hang.",ResourceWarning)
+			if self.latex_plot_flag:
+				warnings.warn("Plotting latex on colab require insalling the texlive library in your colab instance. Not doing so will case errors while plotting.",ImportWarning)
 
 
-		if self.colab and (self.data in ['mnist', 'celeba', 'cifar10']):
-			self.bar_flag = 0
-		else:
-			self.bar_flag = 1
+		# if self.colab and (self.data in ['mnist', 'celeba', 'cifar10']):
+		# 	self.bar_flag = 0
+		# else:
+		# 	self.bar_flag = 1
 
 
 		if self.device == '-1':
@@ -199,9 +204,12 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data), GAN_Metrics): #mnist, ARCH_celeba, ARCG_
 		return bar
 
 
-	def generate_and_save_batch(self,epoch):
-		noise = tf.random.normal([self.num_to_print*self.num_to_print, self.noise_dims], mean = self.noise_mean, stddev = self.noise_stddev)
+	def generate_and_save_batch(self,epoch = 999):
+		
 		path = self.impath + str(self.total_count.numpy())
+		label = 'Epoch {0}'.format(num_epoch)
+
+		noise = tf.random.normal([self.num_to_print*self.num_to_print, self.noise_dims], mean = self.noise_mean, stddev = self.noise_stddev)
 
 		if self.topic in ['cGAN', 'ACGAN']:
 			class_vec = []
@@ -216,7 +224,25 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data), GAN_Metrics): #mnist, ARCH_celeba, ARCG_
 
 		if self.data != 'celeba':
 			predictions = (predictions + 1.0)/2.0
-		eval(self.show_result_func)
+
+		self.save_image_batch(images = predictions,label = label, path = path)
+
+
+	def save_image_batch(self, images = None, label = 'Default Image Label', path = 'result.png'):
+
+		images_on_grid = self.image_grid(input_tensor = images, grid_shape = (self.num_to_print,self.num_to_print), image_shape=(self.output_size,self.output_size),num_channels=images.shape[3])
+		fig1 = plt.figure(figsize=(14,14))
+		ax1 = fig1.add_subplot(111)
+		ax1.cla()
+		ax1.axis("off")
+		if images_on_grid.shape[2] == 3:
+			ax1.imshow(np.clip(images_on_grid,0.,1.))
+		else:
+			ax1.imshow(np.clip(images_on_grid[:,:,0],0.,1.), cmap='gray')
+		plt.title(label, fontsize=12)
+		plt.tight_layout()
+		plt.savefig(path)
+
 
 	def image_grid(self,input_tensor, grid_shape, image_shape=(32, 32), num_channels=3):
 		"""Arrange a minibatch of images into a grid to form a single image.
@@ -265,10 +291,12 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data), GAN_Metrics): #mnist, ARCH_celeba, ARCG_
 		input_tensor = tf.reshape(input_tensor, [1, height, width, num_channels])
 		return input_tensor[0]
 
+
 	def h5_from_checkpoint(self):
-		self.generate_and_save_batch(999)
+		self.generate_and_save_batch()
 		self.generator.save(self.checkpoint_dir + '/model_generator.h5', overwrite = True)
 		self.discriminator.save(self.checkpoint_dir + '/model_discriminator.h5', overwrite = True)
+
 
 
 

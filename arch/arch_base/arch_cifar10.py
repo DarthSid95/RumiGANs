@@ -81,32 +81,6 @@ class ARCH_cifar10():
 
 		return model
 
-	### NEED TO FIX WITH SELF VARS
-	def show_result_cifar10(self, images = None, num_epoch = 0, show = False, save = False, path = 'result.png'):
-
-		import logging
-		logger = logging.getLogger()
-		old_level = logger.level
-		logger.setLevel(100)
-
-		images = tf.reshape(images, [images.shape[0],self.output_size,self.output_size,3])
-		images_on_grid = self.image_grid(input_tensor = images, grid_shape = (self.num_to_print,self.num_to_print),image_shape=(self.output_size,self.output_size),num_channels=3)
-		fig = plt.figure(figsize=(7,7))
-		ax1 = fig.add_subplot(111)
-		ax1.cla()
-		ax1.axis("off")
-		ax1.imshow(np.clip(images_on_grid,0.,1.))
-
-		label = 'Epoch {0}'.format(num_epoch)
-		plt.title(label, fontsize=8)
-		if save:
-			plt.tight_layout()
-			plt.savefig(path)
-		if show:
-			plt.show()
-		else:
-			plt.close()	
-		logger.setLevel(old_level)
 
 	def CIFAR10_Classifier(self):
 		self.FID_model = tf.keras.applications.inception_v3.InceptionV3(include_top=False, pooling='avg', weights='imagenet', input_tensor=None, input_shape=(80,80,3), classes=1000)

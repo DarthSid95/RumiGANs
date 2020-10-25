@@ -22,7 +22,7 @@ from scipy.linalg import sqrtm
 import scipy as sp
 from numpy import iscomplexobj
 
-
+from ext_resources import *
 
 class GAN_Metrics():
 
@@ -32,7 +32,6 @@ class GAN_Metrics():
 		self.PR_flag = 0
 		self.class_prob_flag = 0
 		self.metric_counter_vec = []
-
 
 		if 'FID' in self.metrics:
 			self.FID_flag = 1
@@ -127,9 +126,8 @@ class GAN_Metrics():
 
 	def print_PR(self):
 		path = self.metricpath
-		if self.colab:
-			from matplotlib.backends.backend_pdf import PdfPages
-		else:
+		
+		if self.latex_plot_flag:
 			from matplotlib.backends.backend_pgf import PdfPages
 			plt.rcParams.update({
 				"pgf.texsystem": "pdflatex",
@@ -138,6 +136,10 @@ class GAN_Metrics():
 				"text.usetex": True,     # use inline math for ticks
 				"pgf.rcfonts": False,    # don't setup fonts from rc parameters
 			})
+		else:
+			from matplotlib.backends.backend_pdf import PdfPages
+
+
 		with PdfPages(path+'PR_plot.pdf') as pdf:
 			for PR in self.PR_vec:
 				fig1 = plt.figure(figsize=(3.5, 3.5), dpi=400)
@@ -194,9 +196,8 @@ class GAN_Metrics():
 
 		path = self.metricpath
 		#Colab has issues with latex. Better not waste time printing on Colab. Use the NPY later, offline,...
-		if self.colab:
-			from matplotlib.backends.backend_pdf import PdfPages
-		else:
+			
+		if self.latex_plot_flag:
 			from matplotlib.backends.backend_pgf import PdfPages
 			plt.rcParams.update({
 				"pgf.texsystem": "pdflatex",
@@ -205,6 +206,8 @@ class GAN_Metrics():
 				"text.usetex": True,     # use inline math for ticks
 				"pgf.rcfonts": False,    # don't setup fonts from rc parameters
 			})
+		else:
+			from matplotlib.backends.backend_pdf import PdfPages
 
 		vals = list(np.array(self.FID_vec_even)[:,0])
 		locs = list(np.array(self.FID_vec_even)[:,1])
@@ -273,9 +276,7 @@ class GAN_Metrics():
 
 		path = self.metricpath
 		#Colab has issues with latex. Better not waste time printing on Colab. Use the NPY later, offline,...
-		if self.colab:
-			from matplotlib.backends.backend_pdf import PdfPages
-		else:
+		if self.latex_plot_flag:
 			from matplotlib.backends.backend_pgf import PdfPages
 			plt.rcParams.update({
 				"pgf.texsystem": "pdflatex",
@@ -284,6 +285,8 @@ class GAN_Metrics():
 				"text.usetex": True,     # use inline math for ticks
 				"pgf.rcfonts": False,    # don't setup fonts from rc parameters
 			})
+		else:
+			from matplotlib.backends.backend_pdf import PdfPages
 
 		vals = list(np.array(self.FID_vec_pos)[:,0])
 		locs = list(np.array(self.FID_vec_pos)[:,1])
@@ -318,9 +321,7 @@ class GAN_Metrics():
 	def print_FID(self):
 		path = self.metricpath
 		#Colab has issues with latex. Better not waste time printing on Colab. Use the NPY later, offline,...
-		if self.colab:
-			from matplotlib.backends.backend_pdf import PdfPages
-		else:
+		if self.latex_plot_flag:
 			from matplotlib.backends.backend_pgf import PdfPages
 			plt.rcParams.update({
 				"pgf.texsystem": "pdflatex",
@@ -329,6 +330,8 @@ class GAN_Metrics():
 				"text.usetex": True,     # use inline math for ticks
 				"pgf.rcfonts": False,    # don't setup fonts from rc parameters
 			})
+		else:
+			from matplotlib.backends.backend_pdf import PdfPages
 
 		vals = list(np.array(self.FID_vec)[:,0])
 		locs = list(np.array(self.FID_vec)[:,1])
@@ -349,10 +352,8 @@ class GAN_Metrics():
 
 	def print_ClassProbs(self):
 		path = self.metricpath
-		if self.colab:
-			from matplotlib.backends.backend_pdf import PdfPages
-			plt.rc('text', usetex=False)
-		else:
+
+		if self.latex_plot_flag:
 			from matplotlib.backends.backend_pgf import PdfPages
 			plt.rcParams.update({
 				"pgf.texsystem": "pdflatex",
@@ -361,6 +362,10 @@ class GAN_Metrics():
 				"text.usetex": True,     # use inline math for ticks
 				"pgf.rcfonts": False,    # don't setup fonts from rc parameters
 			})
+		else:
+			from matplotlib.backends.backend_pdf import PdfPages
+			plt.rc('text', usetex = False)
+
 		vals = list(np.array(self.class_prob_vec)[:,0][-1])
 		locs = list(np.arange(10))
 

@@ -31,24 +31,25 @@ flags.DEFINE_float('lr_G', 0.0001, """learning rate for generator""")
 flags.DEFINE_float('lr_D', 0.0001, """learning rate for discriminator""")
 flags.DEFINE_float('beta1', 0.5, """beta1 for Adam""")
 flags.DEFINE_float('beta2', 0.9, """beta2 for Adam""")
-flags.DEFINE_integer('colab', 0, """ set 1 to run code in a colab friendy way """)
-flags.DEFINE_integer('homo_flag', 1, """ set 1 to read data in a colab friendy way """)
-flags.DEFINE_integer('batch_size', 100, """Batch size.""")
-flags.DEFINE_integer('paper', 1, """1 for saving images for a paper""")
-flags.DEFINE_integer('resume', 1, """1 vs 0 for Yes Vs. No""")
-flags.DEFINE_integer('saver', 1, """1-Save events for Tensorboard. 0 O.W.""")
-flags.DEFINE_integer('res_flag', 1, """1-Write results to a file. 0 O.W.""")
-flags.DEFINE_integer('pbar_flag', 1, """1-Display Progress Bar, 0 O.W.""")
-flags.DEFINE_integer('out_size', 32, """CelebA output reshape size""")
 flags.DEFINE_list('metrics', '', 'CSV for the metrics to evaluate. KLD, FID, PR')
-flags.DEFINE_integer('save_all', 0, """1-Save all the models. 0 for latest 10""") #currently functions as save_all internally
+flags.DEFINE_integer('batch_size', 100, """Batch size.""")
 flags.DEFINE_integer('seed', 42, """Initialize the random seed of the run (for reproducibility).""")
 flags.DEFINE_integer('num_epochs', 200, """Number of epochs to train for.""")
 flags.DEFINE_integer('Dloop', 1, """Number of loops to run for D.""")
 flags.DEFINE_integer('Gloop', 1, """Number of loops to run for G.""")
-
-
 flags.DEFINE_integer('num_parallel_calls', 5, """Number of parallel calls for dataset map function""")
+
+flags.DEFINE_integer('colab', 0, """ set 1 to run code in a colab friendy way """)
+flags.DEFINE_integer('latex_plot_flag', 0, """set 1 for plots comptible with latex syntax in text fields""")
+flags.DEFINE_integer('pbar_flag', 1, """1-Display Progress Bar, 0 O.W.""")
+
+flags.DEFINE_integer('paper', 1, """1 for saving images for a paper""")
+flags.DEFINE_integer('resume', 1, """1 vs 0 for Yes Vs. No""")
+flags.DEFINE_integer('saver', 1, """1-Save events for Tensorboard. 0 O.W.""")
+flags.DEFINE_integer('res_flag', 1, """1-Write results to a file. 0 O.W.""")
+flags.DEFINE_integer('out_size', 32, """CelebA output reshape size""")
+flags.DEFINE_integer('save_all', 0, """1-Save all the models. 0 for latest 10""") #currently functions as save_all internally
+
 flags.DEFINE_string('run_id', 'default', """ID of the run, used in saving.""")
 flags.DEFINE_string('log_folder', 'default', """ID of the run, used in saving.""")
 flags.DEFINE_string('mode', 'train', """Operation mode: train, test, fid """)
@@ -125,11 +126,10 @@ if __name__ == '__main__':
 	# tf.debugging.set_log_device_placement(True)
 	# if FLAGS.colab and FLAGS.data == 'celeba':
 	# os.environ["TCMALLOC_LARGE_ALLOC_REPORT_THRESHOLD"] = "500G"
-	if FLAGS.colab:
-		import warnings
-		warnings.filterwarnings("ignore")
 
-
+	# if FLAGS.colab:
+	# 	import warnings
+	# 	warnings.filterwarnings("ignore")
 
 	''' Set random seed '''
 	np.random.seed(FLAGS.seed)

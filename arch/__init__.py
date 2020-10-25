@@ -1,5 +1,5 @@
 from absl import flags
-import os, sys, time, argparse
+import os, sys, argparse
 
 FLAGS = flags.FLAGS
 FLAGS(sys.argv)

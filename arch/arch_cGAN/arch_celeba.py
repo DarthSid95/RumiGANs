@@ -133,32 +133,6 @@ class ARCH_celeba():
 
 		return model
 
-	### NEED TO FIX WITH SELF VARS
-	def show_result_celeba(self, images = None, num_epoch = 0, show = False, save = False, path = 'result.png'):
-
-		import logging
-		logger = logging.getLogger()
-		old_level = logger.level
-		logger.setLevel(100)
-
-		images = tf.reshape(images, [images.shape[0],self.output_size,self.output_size,3])
-		images_on_grid = self.image_grid(input_tensor = images, grid_shape = (self.num_to_print,self.num_to_print),image_shape=(self.output_size,self.output_size),num_channels=3)
-		fig = plt.figure(figsize=(7,7))
-		ax1 = fig.add_subplot(111)
-		ax1.cla()
-		ax1.axis("off")
-		ax1.imshow(np.clip(images_on_grid,0.,1.))
-
-		label = 'Epoch {0}'.format(num_epoch)
-		plt.title(label, fontsize=8)
-		if save:
-			plt.tight_layout()
-			plt.savefig(path)
-		if show:
-			plt.show()
-		else:
-			plt.close()			
-		logger.setLevel(old_level)
 
 
 	def CelebA_Classifier(self):

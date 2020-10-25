@@ -17,6 +17,7 @@ tfd = tfp.distributions
 from matplotlib.backends.backend_pgf import PdfPages
 
 
+
 '''
 GAN_topic is the Overarching class file, where corresponding parents are instantialized, along with setting up the calling functions for these and files and folders for resutls, etc. data reading is also done from here. Sometimes display functions, architectures, etc may be modified here if needed (overloading parent classes)
 '''
@@ -167,7 +168,10 @@ class GAN_Base(GAN_SRC, GAN_DATA_Base):
 
 	def test(self):
 		for i in range(self.num_test_images):
+
 			path = self.impath+'_Testing_'+str(self.total_count.numpy())+'_TestCase_'+str(i)+'.png'
+			label = 'TEST SAMPLES AT ITERATION '+str(self.total_count.numpy())
+
 			size_figure_grid = self.num_to_print
 			test_batch_size = size_figure_grid*size_figure_grid
 			noise = tf.random.normal([self.batch_size, self.noise_dims],self.noise_mean, self.noise_stddev)
@@ -175,21 +179,9 @@ class GAN_Base(GAN_SRC, GAN_DATA_Base):
 			images = self.generator(noise, training=False)
 			if self.data != 'celeba':
 				images = (images + 1.0)/2.0
-			images_on_grid = self.image_grid(input_tensor = images[0:test_batch_size], grid_shape = (size_figure_grid,size_figure_grid),image_shape=(self.output_size,self.output_size),num_channels=images.shape[3])
-			fig1 = plt.figure(figsize=(14,14))
-			ax1 = fig1.add_subplot(111)
-			ax1.cla()
-			ax1.axis("off")
-			if images_on_grid.shape[2] == 3:
-				ax1.imshow(np.clip(images_on_grid,0.,1.))
-			else:
-				ax1.imshow(np.clip(images_on_grid[:,:,0],0.,1.), cmap='gray')
 
-			label = 'TEST SAMPLES AT ITERATION '+str(self.total_count.numpy())
-			plt.title(label)
-			plt.tight_layout()
-			plt.savefig(path)
-			plt.close()
+			self.save_image_batch(images = images,label = label, path = path)
+
 		# self.impath += '_Testing_'
 		# for img_batch in self.train_dataset:
 		# 	self.reals = img_batch
@@ -380,7 +372,10 @@ class GAN_CondGAN(GAN_SRC, GAN_DATA_CondGAN):
 
 	def test(self):
 		for i in range(10):
+
 			path = self.impath+'_Testing_'+str(self.total_count.numpy())+'_TestCase_'+str(i)+'.png'
+			label = 'TEST SAMPLES AT ITERATION '+str(self.total_count.numpy())
+
 			size_figure_grid = self.num_to_print
 			test_batch_size = size_figure_grid*size_figure_grid
 			noise, noise_labels = self.get_noise('test',test_batch_size)
@@ -392,21 +387,8 @@ class GAN_CondGAN(GAN_SRC, GAN_DATA_CondGAN):
 			images = self.generator([noise,noise_labels] , training=False)
 			if self.data != 'celeba':
 				images = (images + 1.0)/2.0
-			images_on_grid = self.image_grid(input_tensor = images[0:test_batch_size], grid_shape = (size_figure_grid,size_figure_grid),image_shape=(self.output_size,self.output_size),num_channels=images.shape[3])
-			fig1 = plt.figure(figsize=(14,14))
-			ax1 = fig1.add_subplot(111)
-			ax1.cla()
-			ax1.axis("off")
-			if images_on_grid.shape[2] == 3:
-				ax1.imshow(np.clip(images_on_grid,0.,1.))
-			else:
-				ax1.imshow(np.clip(images_on_grid[:,:,0],0.,1.), cmap='gray')
-
-			label = 'TEST SAMPLES AT ITERATION '+str(self.total_count.numpy())
-			plt.title(label)
-			plt.tight_layout()
-			plt.savefig(path)
-			plt.close()
+			
+			self.save_image_batch(images = images,label = label, path = path)
 
 '''***********************************************************************************
 ********** GAN RumiGAN setup *********************************************************
@@ -568,7 +550,11 @@ class GAN_RumiGAN(GAN_SRC, GAN_DATA_RumiGAN):
 
 	def test(self):
 		for i in range(self.num_test_images):
+
 			path = self.impath+'_Testing_'+str(self.total_count.numpy())+'_TestCase_'+str(i)+'.png'
+			label = 'TEST SAMPLES AT ITERATION '+str(self.total_count.numpy())
+
+
 			size_figure_grid = self.num_to_print
 			test_batch_size = size_figure_grid*size_figure_grid
 			noise = tf.random.normal([self.batch_size, self.noise_dims],self.noise_mean, self.noise_stddev)
@@ -576,18 +562,4 @@ class GAN_RumiGAN(GAN_SRC, GAN_DATA_RumiGAN):
 			images = self.generator(noise, training=False)
 			if self.data != 'celeba':
 				images = (images + 1.0)/2.0
-			images_on_grid = self.image_grid(input_tensor = images[0:test_batch_size], grid_shape = (size_figure_grid,size_figure_grid),image_shape=(self.output_size,self.output_size),num_channels=images.shape[3])
-			fig1 = plt.figure(figsize=(14,14)) ## for biger paper figs, make 25x25
-			ax1 = fig1.add_subplot(111)
-			ax1.cla()
-			ax1.axis("off")
-			if images_on_grid.shape[2] == 3:
-				ax1.imshow(np.clip(images_on_grid,0.,1.))
-			else:
-				ax1.imshow(np.clip(images_on_grid[:,:,0],0.,1.), cmap='gray')
-
-			label = 'TEST SAMPLES AT ITERATION '+str(self.total_count.numpy())
-			plt.title(label)
-			plt.tight_layout()
-			plt.savefig(path)
-			plt.close()
+			self.save_image_batch(images = images,label = label, path = path)
