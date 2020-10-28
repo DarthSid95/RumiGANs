@@ -4,7 +4,7 @@ import os, sys, argparse
 FLAGS = flags.FLAGS
 FLAGS(sys.argv)
 
-elif FLAGS.topic == 'RumiGAN':
+if FLAGS.topic == 'RumiGAN':
 	from .arch_RumiGAN import *
 elif FLAGS.topic == 'ACGAN':
 	from .arch_ACGAN import *
