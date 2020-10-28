@@ -209,7 +209,7 @@ class GAN_CondGAN(GAN_SRC, GAN_DATA_CondGAN):
 		self.disc_model = 'self.discriminator_model_'+self.data+'()' 
 		self.loss_func = 'self.loss_'+self.loss+'()'   
 		self.dataset_func = 'self.dataset_'+self.data+'(self.train_data, self.train_labels, self.batch_size)'
-		self.show_result_func = 'self.show_result_'+self.data+'(images = predictions, num_epoch=epoch, show = False, save = True, path = path)'
+		# self.show_result_func = 'self.show_result_'+self.data+'(images = predictions, num_epoch=epoch, show = False, save = True, path = path)'
 		self.FID_func = 'self.FID_'+self.data+'()'
 
 		if self.loss == 'FS':
@@ -537,12 +537,16 @@ class GAN_RumiGAN(GAN_SRC, GAN_DATA_RumiGAN):
 			if self.data!='celeba':
 				predictions = (predictions + 1.0)/(2.0)
 			path = self.impath + 'pos.png'
-			eval(self.show_result_func)
+			label = 'POSITIVE CLASS SAMPLES'
+			self.save_image_batch(images = predictions,label = label, path = path)
+			# eval(self.show_result_func)
 			predictions = self.reals_neg[0:self.num_to_print*self.num_to_print]
 			if self.data!='celeba':
 				predictions = (predictions + 1.0)/(2.0)
 			path = self.impath + 'negs.png'
-			eval(self.show_result_func)
+			label = "NEGATIVE CLASS SAMPLES"
+			self.save_image_batch(images = predictions,label = label, path = path)
+			# eval(self.show_result_func)
 		if self.total_count.numpy() <= 2:
 			self.generate_and_save_batch(epoch)
 		if (self.total_count.numpy() % self.save_step.numpy()) == 0:
