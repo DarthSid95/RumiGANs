@@ -66,10 +66,10 @@ class LSGAN_Base(GAN_Base):
 '''***********************************************************************************
 ********** SGAN ACGAN ****************************************************************
 ***********************************************************************************'''
-class LSGAN_cGAN(GAN_ACGAN):
+class LSGAN_cGAN(GAN_CondGAN):
 
 	def __init__(self,FLAGS_dict):
-		GAN_ACGAN.__init__(self,FLAGS_dict)
+		GAN_CondGAN.__init__(self,FLAGS_dict)
 
 	def create_optimizer(self):
 		with tf.device(self.device):

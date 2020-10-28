@@ -63,10 +63,10 @@ class SGAN_Base(GAN_Base):
 '''***********************************************************************************
 ********** SGAN ACGAN ****************************************************************
 ***********************************************************************************'''
-class SGAN_ACGAN(GAN_ACGAN):
+class SGAN_ACGAN(GAN_CondGAN):
 
 	def __init__(self,FLAGS_dict):
-		GAN_ACGAN.__init__(self,FLAGS_dict)
+		GAN_CondGAN.__init__(self,FLAGS_dict)
 
 	def create_optimizer(self):
 		with tf.device(self.device):
@@ -158,10 +158,10 @@ class SGAN_ACGAN(GAN_ACGAN):
 '''***********************************************************************************
 ********** SGAN ACGAN ****************************************************************
 ***********************************************************************************'''
-class SGAN_cGAN(GAN_ACGAN):
+class SGAN_cGAN(GAN_CondGAN):
 
 	def __init__(self,FLAGS_dict):
-		GAN_ACGAN.__init__(self,FLAGS_dict)
+		GAN_CondGAN.__init__(self,FLAGS_dict)
 
 	def create_optimizer(self):
 		with tf.device(self.device):
