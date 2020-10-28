@@ -1,1 +1,1 @@
-from prd_score import *
+from .prd_score import *
