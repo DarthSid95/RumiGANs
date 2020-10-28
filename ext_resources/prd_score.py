@@ -44,7 +44,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import sklearn.cluster
 
-import tensorflow_probability as tfp
+# import tensorflow_probability as tfp
 from matplotlib.backends.backend_pgf import PdfPages
 
 def compute_prd(eval_dist, ref_dist, num_angles=1001, epsilon=1e-10):
