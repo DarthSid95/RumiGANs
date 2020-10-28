@@ -5,7 +5,7 @@ Teaching A GAN What Not to Learn
 
 This is the Code submission accompanying the NeurIPS 2020 paper, titled "Teaching a GAN What Not to Learn."
 
-This code contained the implementations of baseline SGAN, LSGAN, ACGAN, TACGAN, and CGAN-PD employed in the paper to generate the desired results. All code in written in TensorFlow2.x  In its current state, the code can be used to train new models. Pre-trained models of will be made available shortly.
+This code contained the implementations of baseline SGAN, LSGAN, ACGAN, TACGAN, and CGAN-PD employed in the paper to generate the desired results. All code in written in TensorFlow2.x. This code is currently under development and the bash files to train and test the model will be added shortly. Any queries can be directed towards sidartha@iisc.ac.in with [GitHub-RumiGANs] in the subject. In its current state, the code is being prepared to train new models, while pre-trained models of will be made available shortly.
 
 ![RumiGANs](Images/RumiGANs.png?raw=true)
 
