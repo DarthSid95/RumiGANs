@@ -4,6 +4,8 @@ channels:
 dependencies:
   - pip=20.0.2=py36_1
   - python=3.6.10=h0371630_0
+  - cudatoolkit=10.1.243=h6bb024c_0
+  - cudnn=7.6.5=cuda10.1_0
   - pip:
     - absl-py==0.9.0
     - h5py==2.10.0
