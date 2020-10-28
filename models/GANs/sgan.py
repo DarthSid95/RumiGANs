@@ -169,51 +169,7 @@ class SGAN_cGAN(GAN_CondGAN):
 			self.D_optimizer = tf.keras.optimizers.Adam(self.lr_D, self.beta1, self.beta2)
 
 			print("Optimizers Successfully made")		
-		return		with tf.device(self.device):
-			self.total_count = tf.Variable(0,dtype='int64')
-			self.generator = eval(self.gen_model)
-			self.discriminator = eval(self.disc_model)
-
-			if self.res_flag == 1:
-				with open(self.run_loc+'/'+self.run_id+'_Models.txt','a') as fh:
-					# Pass the file handle in as a lambda function to make it callable
-					fh.write("\n\n GENERATOR MODEL: \n\n")
-					self.generator.summary(line_length=80, print_fn=lambda x: fh.write(x + '\n'))
-					fh.write("\n\n DISCRIMINATOR MODEL: \n\n")
-					self.discriminator.summary(line_length=80, print_fn=lambda x: fh.write(x + '\n'))
-
-			print("Model Successfully made")
-
-			print(self.generator.summary())
-			print(self.discriminator.summary())
-
-			self.G_optimizer = tf.keras.optimizers.Adam(self.lr_G)
-			self.D_optimizer = tf.keras.optimizers.Adam(self.lr_D)
-
-			print("Optimizers Successfully made")		
-
-		self.checkpoint = tf.train.Checkpoint(G_optimizer = self.G_optimizer,
-								 D_optimizer = self.D_optimizer,
-								 generator = self.generator,
-								 discriminator = self.discriminator,
-								 total_count = self.total_count)
-		self.manager = tf.train.CheckpointManager(self.checkpoint, self.checkpoint_dir, max_to_keep=10)
-		self.checkpoint_prefix = os.path.join(self.checkpoint_dir, "ckpt")
-
-		if self.resume:
-			try:
-				self.checkpoint.restore(tf.train.latest_checkpoint(self.checkpoint_dir))
-			except:
-				print("Checkpoint loading Failed. It could be a model mismatch. H5 files will be loaded instead")
-				try:
-					self.generator = tf.keras.models.load_model(self.checkpoint_dir+'/model_generator.h5')
-					self.discriminator = tf.keras.models.load_model(self.checkpoint_dir+'/model_discriminator.h5')
-				except:
-					print("H5 file loading also failed. Please Check the LOG_FOLDER and RUN_ID flags")
-
-			print("Model restored...")
-			print("Starting at Iteration - "+str(self.total_count.numpy()))
-			print("Starting at Epoch - "+str(int((self.total_count.numpy() * self.batch_size_big) / (self.train_data.shape[0])) + 1))
+		return
 
 
 	def train_step(self,reals_all,labels_all):
