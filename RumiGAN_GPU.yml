@@ -13,11 +13,11 @@ dependencies:
     - numpy==1.18.1
     - scikit-learn==0.22.1
     - scipy==1.4.1
-    - tensorboard==2.1.1
-    - tensorflow-addons==0.7.1
-    - tensorflow-datasets==3.1.0
-    - tensorflow-estimator==2.1.0
     - tensorflow-gpu==2.1.0
-    - tensorflow-probability==0.8.0
+    - tensorboard
+    - tensorflow-addons
+    - tensorflow-datasets
+    - tensorflow-estimator
+    - tensorflow-probability
     - tqdm==4.42.1
 
