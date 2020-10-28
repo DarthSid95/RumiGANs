@@ -37,7 +37,7 @@ class WGAN_Base(GAN_Base):
 	
 
 	#################################################################
-	def create_optimizer(self)
+	def create_optimizer(self):
 		with tf.device(self.device):
 			if self.loss == 'GP' :
 				# self.lr_G_scheduled = tf.keras.optimizers.schedules.ExponentialDecay(self.lr_G, decay_steps=200, decay_rate=0.9, staircase=True)
