@@ -107,7 +107,7 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data), GAN_Metrics):
 			FLAGS.append_flags_into_file(self.run_loc+'/'+self.run_id+'_Flags.txt')
 
 
-		GAN_Metircs.__init__(self)
+		GAN_Metrics.__init__(self)
 
 
 	def create_run_location(self):
