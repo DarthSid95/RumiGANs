@@ -16,8 +16,6 @@ dependencies:
     - tensorflow-gpu==2.2.0
     - tensorboard==2.2.0
     - tensorflow-addons
-    - tensorflow-datasets
     - tensorflow-estimator==2.2.0
-    - tensorflow-probability==0.10.0
     - tqdm==4.42.1
 

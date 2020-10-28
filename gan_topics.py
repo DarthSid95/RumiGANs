@@ -12,8 +12,8 @@ import json
 from gan_data import *
 from gan_src import *
 
-import tensorflow_probability as tfp
-tfd = tfp.distributions
+# import tensorflow_probability as tfp
+# tfd = tfp.distributions
 from matplotlib.backends.backend_pgf import PdfPages
 
 

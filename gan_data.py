@@ -1,8 +1,8 @@
 from __future__ import print_function
 import numpy as np
 import tensorflow as tf
-import tensorflow_probability as tfp
-tfd = tfp.distributions
+# import tensorflow_probability as tfp
+# tfd = tfp.distributions
 import glob
 from absl import flags
 import csv
@@ -14,7 +14,7 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pgf import PdfPages
 
-import tensorflow_datasets as tfds
+# import tensorflow_datasets as tfds
 # import tensorflow_datasets as tfds
 
 

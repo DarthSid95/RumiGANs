@@ -7,9 +7,9 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pgf import FigureCanvasPgf
 matplotlib.backend_bases.register_backend('pdf', FigureCanvasPgf)
-import tensorflow_probability as tfp
+# import tensorflow_probability as tfp
 from matplotlib.backends.backend_pgf import PdfPages
-tfd = tfp.distributions
+# tfd = tfp.distributions
 
 import matplotlib.pyplot as plt
 import math

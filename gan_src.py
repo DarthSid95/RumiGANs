@@ -13,8 +13,8 @@ from tqdm.autonotebook import tqdm
 import shutil
 import warnings
 
-import tensorflow_probability as tfp
-tfd = tfp.distributions
+# import tensorflow_probability as tfp
+# tfd = tfp.distributions
 
 ##FOR FID
 from numpy import cov
