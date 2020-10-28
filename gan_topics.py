@@ -367,7 +367,7 @@ class GAN_CondGAN(GAN_SRC, GAN_DATA_CondGAN):
 	def print_batch_outputs(self,epoch):
 		if self.total_count.numpy() <= 2:
 			self.generate_and_save_batch(epoch)
-		if (self.total_count.numpy() % % self.save_step.numpy()) == 0:
+		if (self.total_count.numpy() % self.save_step.numpy()) == 0:
 			self.generate_and_save_batch(epoch)
 
 	def test(self):
