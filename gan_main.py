@@ -163,8 +163,10 @@ if __name__ == '__main__':
 	print('GAN Training will commence')
 	gan = eval(gan_call)
 	gan.initial_setup()
-	gan.main_func()
-	print('Worked')
+	gan.create_models()
+	gan.create_optimizer()
+	gan.create_load_checkpoint()
+	print('Initial Setup Complete')
 
 	if gan.mode == 'train':
 		print(gan.mode)
