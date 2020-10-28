@@ -207,7 +207,7 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data), GAN_Metrics):
 	def generate_and_save_batch(self,epoch = 999):
 		
 		path = self.impath + str(self.total_count.numpy())
-		label = 'Epoch {0}'.format(num_epoch)
+		label = 'Epoch {0}'.format(epoch)
 
 		noise = tf.random.normal([self.num_to_print*self.num_to_print, self.noise_dims], mean = self.noise_mean, stddev = self.noise_stddev)
 
