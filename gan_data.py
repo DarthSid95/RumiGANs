@@ -161,7 +161,6 @@ class GAN_DATA_Base(GAN_DATA_ops):
 			self.fid_train_images = train_images[np.where(train_labels == self.number)[0]]
 			train_images = train_images[np.where(train_labels == self.number)[0]][0:self.num_few]
 			self.fid_train_images_few = train_images
-			#train_images[np.where(train_labels == self.number)[0][0:500]]
 		if self.testcase == 'even':
 			train_images = train_images[np.where(train_labels%2 == 0)[0]]
 			self.fid_train_images = train_images
@@ -193,8 +192,6 @@ class GAN_DATA_Base(GAN_DATA_ops):
 		train_images, data_array = self.celeba_loader()
 		# print(data_array,data_array.shape)
 		tags = data_array[0,:] # print to find which col to pull for what
-		
-		
 		
 		
 		# print(gender,gender.shape)

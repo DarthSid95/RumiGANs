@@ -92,6 +92,7 @@ CelebA:
 4. fewfemale - learn females as minority positive class in CelebA - "num_few" used as in MNIST.6
 5. hat - learn hat in CelebA as positive
 6. bald - learn bald in CelebA as positive
+7. cifar10 - learn all of CelebA, with CIFAR-10 as negative class (R3 Rebuttal response)
 CIFAR-10:
 1. single - as in MNIST
 2. few - as in MNIST
