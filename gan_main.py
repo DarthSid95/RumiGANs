@@ -171,7 +171,7 @@ if __name__ == '__main__':
 	if gan.mode == 'train':
 		print(gan.mode)
 		gan.train()
-		gan.test()
+		# gan.test()
 
 	if gan.mode == 'h5_from_checkpoint':
 		gan.h5_from_checkpoint()
