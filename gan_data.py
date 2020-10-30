@@ -548,7 +548,7 @@ class GAN_DATA_RumiGAN(GAN_DATA_ops):
 
 		return true_images, false_images
 
-	def dataset_celeba(self,train_data_pos, train_data_neg, batch_size):
+	def dataset_celeba(self, train_data_pos, train_data_neg, batch_size):
 		
 		def data_reader_faces(filename):
 			with tf.device('/CPU'):
