@@ -96,6 +96,7 @@ class GAN_DATA_ops:
 					for name in true_files:
 						names.write(str(name)+'\n')
 		train_images = np.expand_dims(np.array(true_files),axis=1)
+		print(train_images)
 
 		attr_file = 'data/CelebA/list_attr_celeba.csv'
 
