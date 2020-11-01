@@ -17,13 +17,13 @@ fi
 
 ###--- CelebA ---###
 
-python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'RumiGAN' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'hat' --out_size 128  --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '32' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
+python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'RumiGAN' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'hat' --out_size 128  --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '100' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
 
-python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'RumiGAN' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'bald' --out_size 128 --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '32' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
+python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'RumiGAN' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'bald' --out_size 128 --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '100' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
 
-python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'RumiGAN' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'fewmale' --num_few 10000 --out_size 128 --num_few 10000  --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '32' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
+python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'RumiGAN' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'fewmale' --num_few 10000 --out_size 128 --num_few 10000  --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '100' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
 
-python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'RumiGAN' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'fewfemale' --num_few 10000 --out_size 128 --num_few 10000  --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '32' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
+python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'RumiGAN' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'fewfemale' --num_few 10000 --out_size 128 --num_few 10000  --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '100' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
 
 ###--- CIFAR-10 ---###
 
