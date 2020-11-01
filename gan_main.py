@@ -39,7 +39,7 @@ flags.DEFINE_integer('Dloop', 1, """Number of loops to run for D.""")
 flags.DEFINE_integer('Gloop', 1, """Number of loops to run for G.""")
 flags.DEFINE_integer('num_parallel_calls', 5, """Number of parallel calls for dataset map function""")
 
-flags.DEFINE_integer('colab', 0, """ set 1 to run code in a colab friendy way """)
+flags.DEFINE_integer('colab', 0, """ set 1 to load CelebA in a Colab friendly way""")
 flags.DEFINE_integer('latex_plot_flag', 0, """set 1 for plots comptible with latex syntax in text fields""")
 flags.DEFINE_integer('pbar_flag', 1, """1-Display Progress Bar, 0 O.W.""")
 
@@ -76,6 +76,7 @@ flags.DEFINE_float('alphap', 2.5, """alpha_plus/beta_plus weight for +ve class l
 flags.DEFINE_float('alphan', 0.5, """alpha_minus/beta_minus weight for -ve class loss term""")
 
 flags.DEFINE_string('testcase', 'female', """Test cases for RumiGAN""")
+flags.DEFINE_string('mnist_variant', 'none', """Set to 'fashion' for Fashion-MNIST dataset""")
 '''
 Defined Testcases:
 MNIST/FMNIST:

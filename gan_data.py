@@ -49,8 +49,10 @@ class GAN_DATA_ops:
 		# self.number = number
 
 	def mnist_loader(self):
-		(train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
-		# (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.fashion_mnist.load_data()
+		if self.mnist_variant == 'fashion'
+			(train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.fashion_mnist.load_data()
+		else:
+			(train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
 		train_images = train_images.reshape(train_images.shape[0],self.output_size, self.output_size, 1).astype('float32')
 		train_labels = train_labels.reshape(train_images.shape[0], 1).astype('float32')
 		train_images = (train_images - 127.5) / 127.5
