@@ -1,8 +1,9 @@
 set -e
 if [ "${CONDA_DEFAULT_ENV}" != "RumiGAN" ]; then
-	echo 'You are not in the <RumiGAN> environment. Please run "conda activate RumiGAN" and try again.'
+	echo 'You are not in the <RumiGAN> environment. Attempting to activate the RumiGAN environment. Please run "conda activate RumiGAN" and try again if this fails.'
+	condaActivatePath=$(which activate)
+	source ${condaActivatePath} RumiGAN
 fi
-
 
 ###--- MNIST ---###
 
