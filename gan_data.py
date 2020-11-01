@@ -49,7 +49,7 @@ class GAN_DATA_ops:
 		# self.number = number
 
 	def mnist_loader(self):
-		if self.mnist_variant == 'fashion'
+		if self.mnist_variant == 'fashion':
 			(train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.fashion_mnist.load_data()
 		else:
 			(train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
