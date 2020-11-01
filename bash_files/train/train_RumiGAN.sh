@@ -14,7 +14,7 @@ fi
 
 ###--- Fashion MNIST ---###
 
-python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'RumiGAN' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'mnist' --mnist_variant 'fashion' --testcase 'overlap' --saver 1 --res_flag 1 --num_epochs 75  --lr_G 0.00005 --lr_D 0.00005 --paper 1 --batch_size '256' --metrics 'FID,PR' --colab 0 --pbar_flag 1 --latex_plot_flag 0
+python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'RumiGAN' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'mnist' --mnist_variant 'fashion' --testcase 'overlap' --saver 1 --res_flag 1 --num_epochs 75  --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '256' --metrics 'FID,PR' --colab 0 --pbar_flag 1 --latex_plot_flag 0
 
 ###--- CelebA ---###
 

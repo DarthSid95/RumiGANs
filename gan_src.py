@@ -176,8 +176,6 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data), GAN_Metrics):
 			os.mkdir(self.im_dir)
 			print("Images directory " , self.im_dir ,  " Created ") 
 		self.impath = self.im_dir + '/Images_'
-		if self.loss == 'FS' and self.topic != 'AAE':
-			self.impath += self.latent_kind+'_'
 
 
 
@@ -242,6 +240,7 @@ class GAN_SRC(eval('ARCH_'+FLAGS.data), GAN_Metrics):
 		plt.title(label, fontsize=12)
 		plt.tight_layout()
 		plt.savefig(path)
+		plt.close()
 
 
 	def image_grid(self,input_tensor, grid_shape, image_shape=(32, 32), num_channels=3):
