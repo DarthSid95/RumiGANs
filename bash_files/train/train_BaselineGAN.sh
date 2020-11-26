@@ -8,26 +8,26 @@ fi
 
 ###--- MNIST ---###
 
-python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --mode 'train' --data 'mnist' --testcase 'few' --number '5' --num_few 200 --gan 'LSGAN' --loss 'base' --saver 1 --num_epochs 100  --res_flag 1 --lr_G 0.00005 --lr_D 0.00005 --paper 1 --batch_size '256' --metrics 'FID,PR' --colab 0 --pbar_flag 1 --latex_plot_flag 0
+# python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --mode 'train' --data 'mnist' --testcase 'few' --number '5' --num_few 200 --gan 'LSGAN' --loss 'base' --saver 1 --num_epochs 100  --res_flag 1 --lr_G 0.00005 --lr_D 0.00005 --paper 1 --batch_size '256' --metrics 'FID,PR' --colab 0 --pbar_flag 1 --latex_plot_flag 0
 
-python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'mnist' --testcase 'even'  --saver 1 --res_flag 1 --num_epochs 75  --lr_G 0.00005 --lr_D 0.00005 --paper 1 --batch_size '256' --metrics 'FID,PR' --colab 0 --pbar_flag 1 --latex_plot_flag 0
+# python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'mnist' --testcase 'even'  --saver 1 --res_flag 1 --num_epochs 75  --lr_G 0.00005 --lr_D 0.00005 --paper 1 --batch_size '256' --metrics 'FID,PR' --colab 0 --pbar_flag 1 --latex_plot_flag 0
 
-python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'mnist' --testcase 'overlap' --saver 1 --res_flag 1 --num_epochs 75  --lr_G 0.00005 --lr_D 0.00005 --paper 1 --batch_size '256' --metrics 'FID,PR' --colab 0 --pbar_flag 1 --latex_plot_flag 0
+# python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'mnist' --testcase 'overlap' --saver 1 --res_flag 1 --num_epochs 75  --lr_G 0.00005 --lr_D 0.00005 --paper 1 --batch_size '256' --metrics 'FID,PR' --colab 0 --pbar_flag 1 --latex_plot_flag 0
 
 ###--- Fashion MNIST ---###
 
-python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'mnist' --mnist_variant 'fashion' --testcase 'overlap' --saver 1 --res_flag 1 --num_epochs 75  --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '256' --metrics 'FID,PR' --colab 0 --pbar_flag 1 --latex_plot_flag 0
+# python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'mnist' --mnist_variant 'fashion' --testcase 'overlap' --saver 1 --res_flag 1 --num_epochs 75  --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '256' --metrics 'FID,PR' --colab 0 --pbar_flag 1 --latex_plot_flag 0
 
 
 ###--- CelebA ---###
 
-python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'hat' --out_size 32  --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '100' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
+# python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'hat' --out_size 32  --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '100' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
 
-python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'bald' --out_size 32 --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '100' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
+# python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'bald' --out_size 32 --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '100' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
 
-python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'fewmale' --num_few 10000 --out_size 32 --num_few 10000  --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '100' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
+# python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'fewmale' --num_few 10000 --out_size 32 --num_few 10000  --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '100' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
 
-python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'fewfemale' --num_few 10000 --out_size 32 --num_few 10000  --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '100' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
+# python ./gan_main.py  --run_id 'new' --resume 0 --GPU '0' --device '0' --topic 'Base' --gan 'LSGAN' --loss 'base' --mode 'train' --data 'celeba' --testcase 'fewfemale' --num_few 10000 --out_size 32 --num_few 10000  --saver 1 --num_epochs 200  --res_flag 1 --lr_G 0.0002 --lr_D 0.0002 --paper 1 --batch_size '100' --metrics 'FID,PR'  --colab 0 --pbar_flag 1 --latex_plot_flag 0
 
 ###--- CIFAR-10 ---###
 
