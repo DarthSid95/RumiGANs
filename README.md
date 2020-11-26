@@ -64,17 +64,17 @@ Codes were tested locally on the following system configurations:
 
 ```
 *SYSTEM 1: Ubuntu 18.04.4LTS
-- GPU:				'NVIDIA GeForce GTX 1080'
-- RAM:				'32GB'
-- CPU:				'Intel Core i7-7820HK @2.9GHz x 8'
-- CUDA:				'10.2'
+- GPU:			'NVIDIA GeForce GTX 1080'
+- RAM:			'32GB'
+- CPU:			'Intel Core i7-7820HK @2.9GHz x 8'
+- CUDA:			'10.2'
 - NVIDIA_drivers:	'440.82' 
 
 *SYSTEM 2: macOS Catalina, Version 10.15.6
-- GPU:				-
-- RAM:				'16GB'
-- CPU:				'8-Core Intel Core i9 @2.3GHz'
-- CUDA:				-
+- GPU:			-
+- RAM:			'16GB'
+- CPU:			'8-Core Intel Core i9 @2.3GHz'
+- CUDA:			-
 - NVIDIA_drivers:	-
 ```
 
