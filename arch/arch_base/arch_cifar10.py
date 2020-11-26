@@ -23,7 +23,7 @@ class ARCH_cifar10():
 
 		enc_res = tf.keras.layers.Reshape([1,1,int(self.noise_dims)])(inputs) #1x1xlatent
 
-		denc4 = tf.keras.layers.Conv2DTranspose(512, 5, strides=2,padding='same',kernel_initializer=init_fn,use_bias=True)(dense) #2x2x128
+		denc4 = tf.keras.layers.Conv2DTranspose(512, 5, strides=2,padding='same',kernel_initializer=init_fn,use_bias=True)(enc_res) #2x2x128
 		denc4 = tf.keras.layers.BatchNormalization(momentum=0.9)(denc4)
 		# denc4 = tf.keras.layers.Dropout(0.5)(denc4)
 		denc4 = tf.keras.layers.LeakyReLU(alpha=0.1)(denc4)
