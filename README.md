@@ -79,8 +79,19 @@ Codes were tested locally on the following system configurations:
 ```
 
 To create the ``RumiGAN`` environment, run:   
-```conda env create -f 'RumiGAN_GPU.yml' ``` or ```conda env create -f 'RumiGAN_CPU.yml' ```.
+``conda env create -f 'RumiGAN_GPU.yml' `` or ``conda env create -f 'RumiGAN_CPU.yml' ``.
 
+## Training Data
+
+MNIST, Fashion MNIST and CIFAR-10 are loaded from TensorFlow-Datasets. The CelebA dataset (**1.2GB**) can be downloaded by running the following code (requires ``wget`` dependency):
+
+```
+python download_celeba.py
+```
+Alternatively you can manually download the ``img_align_celeba`` folder and save it at ``RumiGANs/data/CelebA/``.
+
+----------------------------------
+----------------------------------
             
 ### Build
 * The Build is "Under Construction"
@@ -98,12 +109,14 @@ Please see the `LICENSE.txt` file for full informations.
 
 ----------------------------------
 
-Siddarth Asokan\\
-Robert Bosch Centre for Cyber Physical Systems
-Indian Institute of Science, Bangalore
-India
+####Siddarth Asokan  
+Robert Bosch Centre for Cyber Physical Systems  
+Indian Institute of Science
+Bangalore, India
+**Email:** *siddartha@iisc.ac.in*
 
-====================
+----------------------------------
+----------------------------------
 
 
 # Tips for Publishing Research Code
