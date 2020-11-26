@@ -78,7 +78,7 @@ Codes were tested locally on the following system configurations:
 - NVIDIA_drivers:	-
 ```
 
-To create the ``RumiGAN`` environment, run:
+To create the ``RumiGAN`` environment, run:   
 ```conda env create -f 'RumiGAN_GPU.yml' ``` or ```conda env create -f 'RumiGAN_CPU.yml' ```.
 
             
