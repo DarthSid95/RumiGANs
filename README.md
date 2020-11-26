@@ -88,7 +88,7 @@ MNIST, Fashion MNIST and CIFAR-10 are loaded from TensorFlow-Datasets. The Celeb
 ```
 python download_celeba.py
 ```
-Alternatively you can manually download the ``img_align_celeba`` folder and save it at ``RumiGANs/data/CelebA/``.
+Alternatively you can manually download the ``img_align_celeba`` folder and the ``list_attr_celeba.csv`` file, and save them at ``RumiGANs/data/CelebA/``.
 
 ----------------------------------
 ----------------------------------
