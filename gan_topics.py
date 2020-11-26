@@ -115,7 +115,7 @@ class GAN_Base(GAN_SRC, GAN_DATA_Base):
 		return
 
 	def train(self):
-		start = int((self.total_count.numpy() * self.batch_size_big) / (self.train_data.shape[0])) + 1
+		start = int((self.total_count.numpy() * self.batch_size) / (self.train_data.shape[0])) + 1
 		for epoch in range(start,self.num_epochs):
 			if self.pbar_flag:
 				bar = self.pbar(epoch)   
