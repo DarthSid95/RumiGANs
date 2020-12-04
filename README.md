@@ -90,6 +90,18 @@ python download_celeba.py
 ```
 Alternatively you can manually download the ``img_align_celeba`` folder and the ``list_attr_celeba.csv`` file, and save them at ``RumiGANs/data/CelebA/``.
 
+
+## Training  
+
+The code provides training procedure for baseline Standard GAN^1, LSGAN^2, WGAN^3, WGAN-GP^4, and each of their corresponding *Rumi* variants. Additionally, ported implementations of auxiliary classifier GAN (ACGAN^5), Twin ACGAN^6 and conditional GAN with projection discriminator (CGAN-PD^7) are included.   
+
+
+1) The fastest was to train a model is by running the bash files in ``RumiGANs/bash_files/train/``. The train the Model for a given test case: Code to train each ``Figure X Subfig (y)`` is present in these files. Uncomment the desired command to train for the associated testcase. For example
+```
+bash 
+``` 
+
+
 ----------------------------------
 ----------------------------------
             
