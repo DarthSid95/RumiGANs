@@ -1,8 +1,6 @@
 Teaching A GAN What Not to Learn
 ====================
 
-## The source code is "Under Construction" 
-
 ## Introduction
 
 This is the Code submission accompanying the NeurIPS 2020 paper, titled "[Teaching a GAN What Not to Learn](https://arxiv.org/pdf/2010.15639)."
@@ -131,10 +129,10 @@ Please see the `LICENSE.txt` file for full informations.
 
 ----------------------------------
 
-###### Siddarth Asokan  
-###### Robert Bosch Centre for Cyber Physical Systems  
-###### Indian Institute of Science  
-###### Bangalore, India  
+**Siddarth Asokan**  
+**Robert Bosch Centre for Cyber Physical Systems **  
+**Indian Institute of Science**  
+**Bangalore, India **  
 **Email:** *siddartha@iisc.ac.in*
 
 ----------------------------------
