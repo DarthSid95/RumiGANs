@@ -5,13 +5,15 @@ Teaching A GAN What Not to Learn
 
 ## Introduction
 
-This is the Code submission accompanying the NeurIPS 2020 paper, titled "Teaching a GAN What Not to Learn."
+This is the Code submission accompanying the NeurIPS 2020 paper, titled "[Teaching a GAN What Not to Learn](https://arxiv.org/pdf/2010.15639)."
 
-This code contained the implementations of baseline SGAN, LSGAN, ACGAN, TACGAN, and CGAN-PD employed in the paper to generate the desired results. All code in written in TensorFlow2.x. This code is currently under development and the bash files to train and test the model will be added shortly. Any queries can be directed towards sidartha@iisc.ac.in with [GitHub-RumiGANs] in the subject. In its current state, the code is being prepared to train new models, while pre-trained models of will be made available shortly.
+This code contained the implementations of baseline SGAN, LSGAN, ACGAN, TACGAN, and CGAN-PD employed in the paper to generate the desired results. All code in written in TensorFlow2.x.  Any queries can be directed towards sidartha@iisc.ac.in with [GitHub-RumiGANs] in the subject. In its current state, the code can be used to train new models, while pre-trained models of will be made available shortly.
 
 ![RumiGANs](Images/RumiGANs.png?raw=true)
 
+Rumi-GANs split the training data that is input to the GAN discriminator (D) into *positives*, which are target images to model, and *negatives*, which are images from the same dataset, but represent a subset of the distribution to avoid. The generator (G) learns to model only the distribution of the positive samples. Any existing GAN flavor can be reformulated into the *Rumi* framework --- (i) Split the input data into the desirable positive class and the undesirable negative class; (ii) Reformulate the GAN loss to focus on the positive class disribution. The refomulation of all f-GANs and WGAN is presented in the paper.  
 
+The Arxiv version of the paper is available [here](https://arxiv.org/abs/2010.15639), while the NeurIPS 2020 pre-proceedings version of the paper is currently available [here](https://proceedings.neurips.cc/paper/2020/hash/29405e2a4c22866a205f557559c7fa4b-Abstract.html).
 ## Dependencies and Environment
 
 Dependencies can be installed via anaconda. The ``RumiGAN_GPU.yml`` file list the dependencies to setup the GPU system based environment: 
@@ -96,151 +98,48 @@ Alternatively you can manually download the ``img_align_celeba`` folder and the 
 The code provides training procedure for baseline Standard GAN^1, LSGAN^2, WGAN^3, WGAN-GP^4, and each of their corresponding *Rumi* variants. Additionally, ported implementations of auxiliary classifier GAN (ACGAN^5), Twin ACGAN^6 and conditional GAN with projection discriminator (CGAN-PD^7) are included.   
 
 
-1) The fastest was to train a model is by running the bash files in ``RumiGANs/bash_files/train/``. The train the Model for a given test case: Code to train each ``Figure X Subfig (y)`` is present in these files. Uncomment the desired command to train for the associated testcase. For example
+1) The fastest was to train a model is by running the bash files in ``RumiGANs/bash_files/train/``. The train the Model for a given test case: Code to train each ``Figure X Subfig (y)`` is present in these files. Uncomment the desired command to train for the associated testcase. For example, to generate images from Rumi-LSGAN on CelebA with class imbalance, Figure 4(i), uncomment ``Code for Figure 4.i`` in the ``train_RumiGAN.sh`` file in the above folder and run  
 ```
-bash 
-``` 
+bash bash_files/train/train_RumiGAN.sh
+```
+2) Aternatively, you can train any model of your choice by running ``gan_main.py`` with custom flags and modifiers. The list of flags and their defauly values are are defined in  ``gan_main.py``.    
 
+3) **Training on Colab**: This code is capable of training models on Google Colab (although it is *not* optimized for this). For those familiar with the approach, this repository could be cloned to your google drive and steps (1) or (2) could be used for training. CelebA must be downloaded to you current instance on Colab as reading data from GoogleDrive currently causes a Timeout error.  Setting the flags ``--colab_data 1``,  ``--latex_plot_flag 0``, and ``--pbar_flag 0`` is advisable. The ``colab_data`` flag modifies CelebA data-handling code to read data from the local folder, rather than ``RumiGANs/data/CelebA/``.  The ``latex_plot_flag`` flag removes code dependency on latex for plot labels, since the Colab isntance does not native include this. (Alternatively, you could install texlive_full in your colab instance). Lastly, turning off the ``pbar_flag`` was found to prevent the browser from eating too much RAM when training the model. **The .ipynb file for training on Colab will be included shortly**. 
 
 ----------------------------------
 ----------------------------------
-            
-### Build
-* The Build is "Under Construction"
 
-### Links
+### Reference
 
-* [This Takes You to Google](http://www.google.com)
+If you found this code useful, please consider citing our work:
 
-
+```
+@misc{asokan2020teaching,
+      title={Teaching a GAN What Not to Learn}, 
+      author={Siddarth Asokan and Chandra Sekhar Seelamantula},
+      year={2020},
+      eprint={2010.15639},
+      archivePrefix={arXiv},
+      primaryClass={stat.ML}
+}
+```
+*The NeurIPS version of the paper is cirrently available in the pre-proceedings*
 
 ### License
 The license is committed to the repository in the project folder as `LICENSE.txt`.  
 Please see the `LICENSE.txt` file for full informations.
 
-
 ----------------------------------
 
-####Siddarth Asokan  
-Robert Bosch Centre for Cyber Physical Systems  
-Indian Institute of Science
-Bangalore, India
+###### Siddarth Asokan  
+###### Robert Bosch Centre for Cyber Physical Systems  
+###### Indian Institute of Science  
+###### Bangalore, India  
 **Email:** *siddartha@iisc.ac.in*
 
 ----------------------------------
 ----------------------------------
 
 
-# Tips for Publishing Research Code
 
-<img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/08/Logo_for_Conference_on_Neural_Information_Processing_Systems.svg/1200px-Logo_for_Conference_on_Neural_Information_Processing_Systems.svg.png" width=200>
 
-**💡 Collated best practices from most popular ML research repositories - *now official guidelines at NeurIPS 2020!*** 
-
-Based on analysis of more than 200 Machine Learning repositories, these recommendations facilitate reproducibility and correlate with GitHub stars - for more details, see our [our blog post](https://medium.com/paperswithcode/ml-code-completeness-checklist-e9127b168501). 
-
-For NeurIPS 2020 code submissions it is recommended (but not mandatory) to use the [README.md template](templates/README.md) and check as many items on the ML Code Completeness Checklist (described below) as possible. 
-
-## 📋 README.md template
-
-We provide a [README.md template](templates/README.md) that you can use for releasing ML research repositories. The sections in the template were derived by looking at existing repositories, seeing which had the best reception in the community, and then looking at common components that correlate with popularity.
-
-## ✓ ML Code Completeness Checklist
-
-We compiled this checklist by looking at what's common to the most popular ML research repositories. In addition, we prioritized items that facilitate reproducibility and make it easier for others build upon research code.
-
-The ML Code Completness Checklist consists of five items:
-
-1. **Specification of dependencies**
-2. **Training code** 
-3. **Evaluation code**
-4. **Pre-trained models**
-5. **README file including table of results accompanied by precise commands to run/produce those results**
-
-We verified that repositories that check more items on the checklist also tend to have a higher number of GitHub stars. This was verified by analysing official NeurIPS 2019 repositories - more details in the [blog post](https://medium.com/paperswithcode/ml-code-completeness-checklist-e9127b168501). We also provide the [data](notebooks/code_checklist-neurips2019.csv) and [notebook](notebooks/code_checklist-analysis.pdf) to reproduce this analysis from the post. 
-
-NeurIPS 2019 repositories that had all five of these components had the highest number of GitHub stars (median of 196 and mean of 2,664 stars). 
-
-We explain each item on the checklist in detail blow. 
-
-#### 1. Specification of dependencies
-
-If you are using Python, this means providing a `requirements.txt` file (if using `pip` and `virtualenv`), providing `environment.yml` file (if using anaconda), or a `setup.py` if your code is a library. 
-
-It is good practice to provide a section in your README.md that explains how to install these dependencies. Assume minimal background knowledge and be clear and comprehensive - if users cannot set up your dependencies they are likely to give up on the rest of your code as well. 
-
-If you wish to provide whole reproducible environments, you might want to consider using Docker and upload a Docker image of your environment into Dockerhub. 
-
-#### 2. Training code
-
-Your code should have a training script that can be used to obtain the principal results stated in the paper. This means you should include hyperparameters and any tricks that were used in the process of getting your results. To maximize usefulness, ideally this code should be written with extensibility in mind: what if your user wants to use the same training script on their own dataset?
-
-You can provide a documented command line wrapper such as `train.py` to serve as a useful entry point for your users. 
-
-#### 3. Evaluation code
-
-Model evaluation and experiments often depend on subtle details that are not always possible to explain in the paper. This is why including the exact code you used to evaluate or run experiments is helpful to give a complete description of the procedure. In turn, this helps the user to trust, understand and build on your research.
-
-You can provide a documented command line wrapper such as `eval.py` to serve as a useful entry point for your users.
-
-#### 4. Pre-trained models
-
-Training a model from scratch can be time-consuming and expensive. One way to increase trust in your results is to provide a pre-trained model that the community can evaluate to obtain the end results. This means users can see the results are credible without having to train afresh.
-
-Another common use case is fine-tuning for downstream task, where it's useful to release a pretrained model so others can build on it for application to their own datasets.
-
-Lastly, some users might want to try out your model to see if it works on some example data. Providing pre-trained models allows your users to play around with your work and aids understanding of the paper's achievements.
-
-#### 5. README file includes table of results accompanied by precise command to run to produce those results
-
-Adding a table of results into README.md lets your users quickly understand what to expect from the repository (see the [README.md template](templates/README.md) for an example). Instructions on how to reproduce those results (with links to any relevant scripts, pretrained models etc) can provide another entry point for the user and directly facilitate reproducibility. In some cases, the main result of a paper is a Figure, but that might be more difficult for users to understand without reading the paper. 
-
-You can further help the user understand and contextualize your results by linking back to the full leaderboard that has up-to-date results from other papers. There are [multiple leaderboard services](#results-leaderboards) where this information is stored.  
-
-## 🎉 Additional awesome resources for releasing research code
-
-### Hosting pretrained models files
-
-1. [Zenodo](https://zenodo.org) - versioning, 50GB, free bandwidth, DOI, provides long-term preservation
-2. [GitHub Releases](https://help.github.com/en/github/administering-a-repository/managing-releases-in-a-repository) - versioning, 2GB file limit, free bandwidth
-3. [OneDrive](https://www.onedrive.com/) - versioning, 2GB (free)/ 1TB (with Office 365), free bandwidth
-4. [Google Drive](https://drive.google.com) - versioning, 15GB, free bandwidth
-5. [Dropbox](https://dropbox.com) - versioning, 2GB (paid unlimited), free bandwidth
-6. [AWS S3](https://aws.amazon.com/s3/) - versioning, paid only, paid bandwidth
- 
-### Managing model files
-
-1. [RClone](https://rclone.org/) - provides unified access to many different cloud storage providers
-
-### Standardized model interfaces
-
-1. [PyTorch Hub](https://pytorch.org/hub/)
-2. [Tensorflow Hub](https://www.tensorflow.org/hub)
-3. [Hugging Face NLP models](https://huggingface.co/models)
-4. [ONNX](https://onnx.ai/)
-
-### Results leaderboards
-
-1. [Papers with Code leaderboards](https://paperswithcode.com/sota) - with 2500+ leaderboards
-2. [CodaLab](https://competitions.codalab.org/) - with 450+ leaderboards
-3. [NLP Progress](https://nlpprogress.com/) - with 90+ leaderboards
-4. [EvalAI](https://evalai.cloudcv.org/) - with 50+ leaderboards
-5. [Collective Knowledge](https://cKnowledge.io/reproduced-results) - with 40+ leaderboards
-6. [Weights & Biases - Benchmarks](https://www.wandb.com/benchmarks) - with 9+ leaderboards
-
-### Making project pages
-
-1. [GitHub pages](https://pages.github.com/)
-2. [Fastpages](https://github.com/fastai/fastpages)
-
-### Making demos and tutorials
-
-1. [Google Colab](https://colab.research.google.com/)
-2. [Binder](https://mybinder.org/)
-3. [Streamlit](https://github.com/streamlit/streamlit)
-
-## Contributing
-
-If you'd like to contribute, or have any suggestions for these guidelines, you can contact us at hello@paperswithcode.com or open an issue on this GitHub repository. 
-
-All contributions welcome! All content in this repository is licensed under the MIT license.
