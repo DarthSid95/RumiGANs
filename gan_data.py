@@ -14,9 +14,6 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pgf import PdfPages
 
-# import tensorflow_datasets as tfds
-# import tensorflow_datasets as tfds
-
 
 ### Need to prevent tfds downloads bugging out? check
 import urllib3
@@ -62,16 +59,16 @@ class GAN_DATA_ops:
 		return train_images, train_labels, test_images, test_labels
 
 
-	def fmnist_loader(self):
-		(train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.fashion_mnist.load_data()
-		train_images = train_images.reshape(train_images.shape[0],self.output_size, self.output_size, 1).astype('float32')
-		train_labels = train_labels.reshape(train_images.shape[0], 1).astype('float32')
-		train_images = (train_images - 127.5) / 127.5
-		test_images = test_images.reshape(test_images.shape[0],self.output_size, self.output_size, 1).astype('float32')
-		test_labels = test_labels.reshape(test_images.shape[0], 1).astype('float32')
-		test_images = (test_images - 127.5) / 127.5
+	# def fmnist_loader(self):
+	# 	(train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.fashion_mnist.load_data()
+	# 	train_images = train_images.reshape(train_images.shape[0],self.output_size, self.output_size, 1).astype('float32')
+	# 	train_labels = train_labels.reshape(train_images.shape[0], 1).astype('float32')
+	# 	train_images = (train_images - 127.5) / 127.5
+	# 	test_images = test_images.reshape(test_images.shape[0],self.output_size, self.output_size, 1).astype('float32')
+	# 	test_labels = test_labels.reshape(test_images.shape[0], 1).astype('float32')
+	# 	test_images = (test_images - 127.5) / 127.5
 
-		return train_images, train_labels, test_images, test_labels
+	# 	return train_images, train_labels, test_images, test_labels
 
 
 	def celeba_loader(self):

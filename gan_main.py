@@ -15,7 +15,6 @@ from absl import app
 from absl import flags
 
 
-
 # from mnist_cnn_icp_eval import *
 # tf.keras.backend.set_floatx('float64')
 
@@ -66,6 +65,7 @@ flags.DEFINE_string('device', '0', """Input to tf.device(): Which device to run 
 flags.DEFINE_integer('number', 3, """ Class selector in Multi-class data on mnist/fmnist/cifar10""")
 flags.DEFINE_integer('num_few', 200, """Num of images for minority 200((F)MNIST), 1k(Cifar10), 5k(CelebA)""")
 flags.DEFINE_string('label_style', 'base', """Label input style to cGAN/ACGANs :base/embed/multiply""")
+flags.DEFINE_string('noise_kind', 'gaussian', """Type of Noise for WAE latent prior""")
 
 flags.DEFINE_float('label_a', -0.5, """Class label - a """)
 flags.DEFINE_float('label_bp', 2.0, """Class label - bp for +ve data """)
@@ -164,6 +164,7 @@ if __name__ == '__main__':
 	print('GAN Training will commence')
 	gan = eval(gan_call)
 	gan.initial_setup()
+	gan.get_data()
 	gan.create_models()
 	gan.create_optimizer()
 	gan.create_load_checkpoint()

@@ -45,13 +45,13 @@ class GAN_Base(GAN_SRC, GAN_DATA_Base):
 
 
 		''' Define dataset and tf.data function. batch sizing done'''
-		self.get_data()
+		# self.get_data()
 
-		self.create_models()
+		# self.create_models()
 
-		self.create_optimizer()
+		# self.create_optimizer()
 
-		self.create_load_checkpoint()
+		# self.create_load_checkpoint()
 
 	def get_data(self):
 		# with tf.device('/CPU'):
@@ -162,7 +162,6 @@ class GAN_Base(GAN_SRC, GAN_DATA_Base):
 
 		if self.total_count.numpy() <= 2:
 			self.generate_and_save_batch(epoch)
-
 		if (self.total_count.numpy() % self.save_step.numpy()) == 0:
 			self.generate_and_save_batch(epoch)
 
@@ -219,13 +218,13 @@ class GAN_CondGAN(GAN_SRC, GAN_DATA_CondGAN):
 			self.DEQ_func = 'self.discriminator_ODE()'
 
 		''' Define dataset and tf.data function. batch sizing done'''
-		self.get_data()
+		# self.get_data()
 
-		self.create_models()
+		# self.create_models()
 
-		self.create_optimizer()
+		# self.create_optimizer()
 
-		self.create_load_checkpoint()
+		# self.create_load_checkpoint()
 
 	def get_data(self):
 		# with tf.device('/CPU'):
@@ -414,13 +413,13 @@ class GAN_RumiGAN(GAN_SRC, GAN_DATA_RumiGAN):
 		self.FID_func = 'self.FID_'+self.data+'()'
 
 		''' Define dataset and tf.data function. batch sizing done'''
-		self.get_data()
+		# self.get_data()
 
-		self.create_models()
+		# self.create_models()
 
-		self.create_optimizer()
+		# self.create_optimizer()
 
-		self.create_load_checkpoint()
+		# self.create_load_checkpoint()
 
 	def get_data(self):
 		
@@ -523,7 +522,6 @@ class GAN_RumiGAN(GAN_SRC, GAN_DATA_RumiGAN):
 					else:
 						self.manager.save()
 
-
 			if self.pbar_flag:
 				bar.close()
 				del bar
@@ -557,7 +555,6 @@ class GAN_RumiGAN(GAN_SRC, GAN_DATA_RumiGAN):
 
 			path = self.impath+'_Testing_'+str(self.total_count.numpy())+'_TestCase_'+str(i)+'.png'
 			label = 'TEST SAMPLES AT ITERATION '+str(self.total_count.numpy())
-
 
 			size_figure_grid = self.num_to_print
 			test_batch_size = size_figure_grid*size_figure_grid
